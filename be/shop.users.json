@@ -1,0 +1,36 @@
+[{
+  "_id": {
+    "$oid": "692c48ee18fd18f2b9f03d7b"
+  },
+  "username": "admin",
+  "password": "123456",
+  "role": "admin",
+  "isActive": true
+},
+{
+  "_id": {
+    "$oid": "692c48ee18fd18f2b9f03d7c"
+  },
+  "username": "user01",
+  "password": "123456",
+  "role": "user",
+  "isActive": true
+},
+{
+  "_id": {
+    "$oid": "692c48ee18fd18f2b9f03d7d"
+  },
+  "username": "user02",
+  "password": "123456",
+  "role": "user",
+  "isActive": false
+},
+{
+  "_id": {
+    "$oid": "692c48ee18fd18f2b9f03d7e"
+  },
+  "username": "user03",
+  "password": "abc123",
+  "role": "user",
+  "isActive": true
+}]

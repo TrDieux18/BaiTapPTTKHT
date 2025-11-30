@@ -1,0 +1,112 @@
+[{
+  "_id": {
+    "$oid": "692b1dde18fd18f2b9f03d71"
+  },
+  "title": "Ổ cứng SSD 1TB NVMe",
+  "description": "SSD tốc độ cao, đọc ghi 3500MB/s. Hiệu năng ổn định, phù hợp với học sinh sinh viên",
+  "price": 1800000,
+  "discountPercentage": 12,
+  "rating": 4.8,
+  "stock": 40,
+  "thumbnail": "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcSfICJ9-HwgjT1KnlRGh7eJvHWGCDhvX4h6WoRqA61R_a0iueUX1yEkomtRZA1rfjZBPDGoW6SggDgbaNs5n6Ga-kQuS_TBnY-vzrN_RU9Y23M7_SdekgC9JbZ7MKmo_a2eDO9YT7orzA&usqp=CAc",
+  "isActive": true,
+  "slug": "o-cung-ssd-1tb-nvme"
+},
+{
+  "_id": {
+    "$oid": "692b1dde18fd18f2b9f03d72"
+  },
+  "title": "Laptop Gaming ROG",
+  "description": "Laptop gaming hiệu năng cao, RTX 4060, RAM 16GB",
+  "price": 25000000,
+  "discountPercentage": 15,
+  "rating": 4.9,
+  "stock": 15,
+  "thumbnail": "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcSfICJ9-HwgjT1KnlRGh7eJvHWGCDhvX4h6WoRqA61R_a0iueUX1yEkomtRZA1rfjZBPDGoW6SggDgbaNs5n6Ga-kQuS_TBnY-vzrN_RU9Y23M7_SdekgC9JbZ7MKmo_a2eDO9YT7orzA&usqp=CAc",
+  "isActive": true,
+  "slug": "laptop-gaming-rog"
+},
+{
+  "_id": {
+    "$oid": "692b1dde18fd18f2b9f03d73"
+  },
+  "title": "Chuột Gaming Wireless",
+  "description": "Chuột không dây, DPI 16000, pin 70h",
+  "price": 890000,
+  "discountPercentage": 20,
+  "rating": 4.6,
+  "stock": 50,
+  "thumbnail": "/uploads/mouse.png",
+  "isActive": true,
+  "slug": "chuot-gaming-wireless"
+},
+{
+  "_id": {
+    "$oid": "692b1dde18fd18f2b9f03d75"
+  },
+  "title": "Bàn phím cơ RGB",
+  "description": "Bàn phím cơ switch blue, LED RGB",
+  "price": 1200000,
+  "discountPercentage": 8,
+  "rating": 4.5,
+  "stock": 60,
+  "thumbnail": "/uploads/keyboard.png",
+  "isActive": true,
+  "slug": "ban-phim-co-rgb"
+},
+{
+  "_id": {
+    "$oid": "692b1dde18fd18f2b9f03d76"
+  },
+  "title": "Tai nghe Gaming 7.1",
+  "description": "Tai nghe gaming âm thanh vòm 7.1",
+  "price": 750000,
+  "discountPercentage": 18,
+  "rating": 4.4,
+  "stock": 35,
+  "thumbnail": "/uploads/headset.png",
+  "isActive": true,
+  "slug": "tai-nghe-gaming-71"
+},
+{
+  "_id": {
+    "$oid": "692c6d76e71dc3ec7fc2bf2b"
+  },
+  "title": "Màn hình Dell 27 inch P2723D QHD/IPS/60Hz/8ms",
+  "description": "Thiết kế gọn gàng, linh hoạt.\n",
+  "price": 4200000,
+  "discountPercentage": 7,
+  "rating": 5,
+  "stock": 21,
+  "thumbnail": "https://cdn.hoanghamobile.vn/i/previewV2/Uploads/2025/05/29/p2723d.png",
+  "isActive": true,
+  "slug": "man-hinh-dell-27-inch-p2723d-qhdips60hz8ms",
+  "createdAt": {
+    "$date": "2025-11-30T16:14:46.389Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-30T16:40:57.915Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "692c6e16e71dc3ec7fc2bf2d"
+  },
+  "title": "Màn hình Monitor Xiaomi 27 inch A27i ELA5345EU",
+  "description": "Tấm nền\t\nIPS\n\nTỉ lệ màn hình\t\n16:9\n\nTần số quét\t\n100 Hz\n\nThời gian phản hồi\t\n6ms\n\nSố lượng màu\t\n16.7 triệu\n\nĐộ phủ màu\t\n100% sRGB\n\nĐộ sáng\t\n250 cd/m²\n\nGóc nhìn\t\n178 (H) / 178 (V)\n\nĐộ tương phản tĩnh\t\n1000:1\n\nCông nghệ màn hình\t\ncông nghệ đèn nền WLE\n\nNghiêng\t\n-5° ± 2 ~+ 15° ± 2\n\nTreo tường\t\n75 x 75 mm\n\nĐộ phân giải màn hình\t\n1920 x 1080",
+  "price": 4200000,
+  "discountPercentage": 7,
+  "rating": 5,
+  "stock": 20,
+  "thumbnail": "https://cdn2.cellphones.com.vn/insecure/rs:fill:58:58/q:90/plain/https://cellphones.com.vn/media/catalog/product/s/s/ssss_14__3.png",
+  "isActive": true,
+  "slug": "man-hinh-monitor-xiaomi-27-inch-a27i-ela5345eu",
+  "createdAt": {
+    "$date": "2025-11-30T16:17:26.256Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-30T16:17:26.256Z"
+  },
+  "__v": 0
+}]
