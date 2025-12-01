@@ -73,7 +73,7 @@ const ClientLayout: React.FC = () => {
             <ul className="flex gap-8 justify-center text-slate-300 font-medium">
               <li>
                 <NavLink
-                  to="/home"
+                  to="/"
                   className={({ isActive }) =>
                     `relative py-2 hover:text-slate-100 transition-colors ${
                       isActive ? "text-slate-100" : ""

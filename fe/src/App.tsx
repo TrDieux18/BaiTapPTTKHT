@@ -19,7 +19,7 @@ function App() {
       <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
 
       <Route element={<ClientLayout />}>
-        <Route path="/home" element={<HomePage />} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/cart" element={<CartPage />} />
       </Route>
 
