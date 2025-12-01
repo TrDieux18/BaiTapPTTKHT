@@ -1,5 +1,5 @@
 import { loginUser } from "@/services/UserService";
-import type { RootState } from "@/store/store";
+import type { AppDispatch, RootState } from "@/store/store";
 import { setUser } from "@/store/UserReducer";
 import type { ApiResponse } from "@/types/Response";
 import type { User } from "@/types/User";
@@ -11,15 +11,14 @@ import { useNavigate } from "react-router-dom";
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
   const user = useSelector((state: RootState) => state.user.user);
 
   useEffect(() => {
     if (!user) return;
-    if (user.role === "admin") navigate("/admin");
-    else navigate("/");
+    if (user.role === "user") navigate("/home");
   }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {

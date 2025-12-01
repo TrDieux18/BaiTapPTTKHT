@@ -9,6 +9,8 @@ import Product from "./pages/admin/Product";
 import EditProduct from "./pages/admin/EditProduct";
 import CreateProduct from "./pages/admin/CreateProduct";
 
+import CartPage from "@/pages/client/Cart";
+
 function App() {
   const user = useSelector((state: RootState) => state.user.user);
 
@@ -17,7 +19,8 @@ function App() {
       <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
 
       <Route element={<ClientLayout />}>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/cart" element={<CartPage />} />
       </Route>
 
       {user?.role === "admin" && (

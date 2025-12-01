@@ -1,20 +1,27 @@
 import { getAllProducts } from "@/services/ProductService";
+import { addToCart, updateQuantity } from "@/store/CartReducer";
+import type { AppDispatch, RootState } from "@/store/store";
+import type { Cart } from "@/types/Cart";
 import type { Product } from "@/types/Product";
 import type { ApiResponse } from "@/types/Response";
 import { ShoppingCart, Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AiOutlineDollarCircle, AiOutlineThunderbolt } from "react-icons/ai";
 import { TiTick } from "react-icons/ti";
+import { useDispatch, useSelector } from "react-redux";
 
 const HomePage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const cart: Cart[] = useSelector((state: RootState) => state.cart);
 
+  const dispatch = useDispatch<AppDispatch>();
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
         const response: ApiResponse<Product[]> = await getAllProducts();
+        console.log(response);
         if (response.success && response.data) {
           setProducts(response.data);
         }
@@ -27,6 +34,14 @@ const HomePage = () => {
 
     fetchProducts();
   }, []);
+
+  const handleAddToCart = (product: Product) => {
+    if (cart.some((item) => item._id === product._id)) {
+      dispatch(updateQuantity({ productId: product._id, quantity: 1 }));
+    } else {
+      dispatch(addToCart({ product }));
+    }
+  };
 
   const calculateDiscountedPrice = (price: number, discount: number) => {
     return price - (price * discount) / 100;
@@ -70,6 +85,7 @@ const HomePage = () => {
                     src={product.thumbnail}
                     alt={product.title}
                     className="w-full h-auto object-cover group-hover:scale-110 transition-transform duration-500"
+                    loading="lazy"
                   />
 
                   {product.discountPercentage > 0 && (
@@ -126,7 +142,10 @@ const HomePage = () => {
                     )}
                   </div>
 
-                  <button className="w-full bg-slate-800 hover:bg-slate-700 text-slate-100 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 group-hover:bg-slate-100 group-hover:text-slate-900">
+                  <button
+                    onClick={() => handleAddToCart(product)}
+                    className="w-full bg-slate-800 hover:bg-slate-700 text-slate-100 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 group-hover:bg-slate-100 group-hover:text-slate-900"
+                  >
                     <ShoppingCart size={20} />
                     Thêm vào giỏ hàng
                   </button>

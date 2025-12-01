@@ -22,12 +22,6 @@ const UserSlice = createSlice({
          state.user = action.payload;
          localStorage.setItem('user', JSON.stringify(action.payload));
       },
-      setLoading: (state, action: PayloadAction<boolean>) => {
-         state.loading = action.payload;
-      },
-      setError: (state, action: PayloadAction<string | null>) => {
-         state.error = action.payload;
-      },
       logout: (state) => {
          state.user = null;
          localStorage.removeItem('user');
@@ -36,5 +30,5 @@ const UserSlice = createSlice({
    },
 });
 
-export const { setUser, setLoading, setError, logout } = UserSlice.actions;
+export const { setUser, logout } = UserSlice.actions;
 export default UserSlice.reducer;

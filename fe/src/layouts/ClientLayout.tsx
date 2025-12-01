@@ -17,9 +17,7 @@ const ClientLayout: React.FC = () => {
   const navigate = useNavigate();
 
   const user = useSelector((state: RootState) => state.user.user);
-  if (user?.role === "admin") {
-    navigate("/admin");
-  }
+
   const dispatch = useDispatch();
 
   const handleLogout = () => {
@@ -75,7 +73,7 @@ const ClientLayout: React.FC = () => {
             <ul className="flex gap-8 justify-center text-slate-300 font-medium">
               <li>
                 <NavLink
-                  to="/"
+                  to="/home"
                   className={({ isActive }) =>
                     `relative py-2 hover:text-slate-100 transition-colors ${
                       isActive ? "text-slate-100" : ""
@@ -85,6 +83,25 @@ const ClientLayout: React.FC = () => {
                   {({ isActive }) => (
                     <>
                       Trang chủ
+                      {isActive && (
+                        <span className="absolute bottom-0 left-0 w-full h-0.5 bg-slate-100" />
+                      )}
+                    </>
+                  )}
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/cart"
+                  className={({ isActive }) =>
+                    `relative py-2 hover:text-slate-100 transition-colors ${
+                      isActive ? "text-slate-100" : ""
+                    }`
+                  }
+                >
+                  {({ isActive }) => (
+                    <>
+                      Giỏ hàng
                       {isActive && (
                         <span className="absolute bottom-0 left-0 w-full h-0.5 bg-slate-100" />
                       )}

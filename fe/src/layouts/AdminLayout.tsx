@@ -6,7 +6,6 @@ import {
   MdLogout,
   MdMenu,
   MdClose,
-
   MdPerson,
   MdKeyboardArrowDown,
   MdHome,
@@ -52,7 +51,7 @@ const AdminLayout: React.FC = () => {
 
         <nav className="flex-1 p-4 space-y-2">
           <NavLink
-            to="/"
+            to="/home"
             end
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${

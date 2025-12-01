@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 
 export const getAllProducts = async (req: Request, res: Response) => {
    try {
-      const products = await Product.find({ createdAt: -1 });
+      const products = await Product.find();
       res.status(200).json({ success: true, data: products });
    } catch (error: any) {
       res.status(500).json({ message: (error as Error).message });
