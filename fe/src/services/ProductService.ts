@@ -9,7 +9,7 @@ export const getAllProducts = async (params?: Record<string, string>) => {
       const response = await axiosClient.get("/products", { params });
       return response.data;
    } catch (error: any) {
-      console.error("Failed to fetch products:", error.message);
+      throw error;
    }
 };
 
@@ -18,7 +18,7 @@ export const getProductById = async (id: string) => {
       const response = await axiosClient.get(`/products/${id}`);
       return response.data;
    } catch (error: any) {
-      console.error(`Failed to fetch product with id ${id}:`, error.message);
+      throw error;
    }
 };
 
@@ -30,7 +30,7 @@ export const updateProduct = async (productData: any) => {
       );
       return response.data;
    } catch (error: any) {
-      console.error("Failed to update product:", error.message);
+      throw error;
    }
 }
 
@@ -39,7 +39,7 @@ export const createProduct = async (productData: any) => {
       const response = await axiosClient.post("/admin/products/new", productData);
       return response.data;
    } catch (error: any) {
-      console.error("Failed to create product:", error.message);
+      throw error;
    }
 };
 
@@ -48,6 +48,6 @@ export const deleteProduct = async (id: string) => {
       const response = await axiosClient.delete(`/admin/products/delete/${id}`);
       return response.data;
    } catch (error: any) {
-      console.error("Failed to delete product:", error.message);
+      throw error;
    }
 }

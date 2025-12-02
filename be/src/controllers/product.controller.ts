@@ -4,8 +4,37 @@ import { Request, Response } from "express";
 
 export const getAllProducts = async (req: Request, res: Response) => {
    try {
-      const products = await Product.find();
-      res.status(200).json({ success: true, data: products });
+      const { page = '1', limit = '10', search = '', category = '' } = req.query;
+
+      const pageNum = parseInt(page as string);
+      const limitNum = parseInt(limit as string);
+      const skip = (pageNum - 1) * limitNum;
+
+      const query: any = {};
+
+      if (search) {
+         query.title = { $regex: search, $options: 'i' };
+      }
+
+      if (category && category !== 'all') {
+         query.slug = { $regex: category, $options: 'i' };
+      }
+
+      const products = await Product.find(query)
+         .skip(skip)
+         .limit(limitNum)
+         .sort({ createdAt: -1 });
+
+      const total = await Product.countDocuments(query);
+      const totalPages = Math.ceil(total / limitNum);
+
+      res.status(200).json({
+         success: true,
+         data: products,
+         totalPages,
+         currentPage: pageNum,
+         total
+      });
    } catch (error: any) {
       res.status(500).json({ message: (error as Error).message });
    }
@@ -14,7 +43,6 @@ export const getAllProducts = async (req: Request, res: Response) => {
 export const createProduct = async (req: Request, res: Response) => {
    try {
       const { title, description, price, discountPercentage, rating, stock, thumbnail, slug } = req.body;
-      console.log(req.body);
       const newProduct = new Product({
          title,
          description,
@@ -59,7 +87,6 @@ export const updateProduct = async (req: Request, res: Response) => {
       res.status(200).json({ success: true, data: updatedProduct });
 
    } catch (error: any) {
-      console.error("Error updating product:", error);
       res.status(500).json({ message: error.message });
    }
 };
@@ -84,7 +111,6 @@ export const getProductById = async (req: Request, res: Response) => {
 export const deleteProduct = async (req: Request, res: Response) => {
    try {
       const { id } = req.params;
-      console.log("Deleting product with ID:", id);
       const deletedProduct = await Product.findByIdAndDelete({
          _id: new Types.ObjectId(id)
       });
@@ -94,6 +120,5 @@ export const deleteProduct = async (req: Request, res: Response) => {
       res.status(200).json({ success: true, message: "Product deleted successfully" });
    } catch (error: any) {
       res.status(500).json({ message: error.message });
-      console.error("Error deleting product:", error);
    }
 }

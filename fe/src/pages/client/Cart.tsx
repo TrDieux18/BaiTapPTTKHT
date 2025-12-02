@@ -24,7 +24,6 @@ const CartPage = () => {
           dispatch(setCart(response.data));
         }
       } catch (error) {
-        console.error("Failed to fetch cart:", error);
       } finally {
         setLoading(false);
       }
@@ -44,9 +43,7 @@ const CartPage = () => {
       if (response.success && response.data) {
         dispatch(setCart(response.data));
       }
-    } catch (error) {
-      console.error("Failed to remove item:", error);
-    }
+    } catch (error) {}
   };
 
   const handleClear = async () => {
@@ -56,9 +53,7 @@ const CartPage = () => {
         if (response.success && response.data) {
           dispatch(setCart(response.data));
         }
-      } catch (error) {
-        console.error("Failed to clear cart:", error);
-      }
+      } catch (error) {}
     }
   };
 
@@ -76,9 +71,7 @@ const CartPage = () => {
       if (response.success && response.data) {
         dispatch(setCart(response.data));
       }
-    } catch (error) {
-      console.error("Failed to update quantity:", error);
-    }
+    } catch (error) {}
   };
 
   if (loading) {

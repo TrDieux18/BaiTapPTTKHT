@@ -58,7 +58,6 @@ const ProductPage = () => {
           }
         }
       } catch (error) {
-        console.error("Failed to fetch products:", error);
       } finally {
         setLoading(false);
       }
@@ -88,7 +87,6 @@ const ProductPage = () => {
         );
         alert("Xóa sản phẩm thành công!");
       } catch (error) {
-        console.error("Failed to delete product:", error);
         alert("Xóa sản phẩm thất bại, vui lòng thử lại!");
       }
     }

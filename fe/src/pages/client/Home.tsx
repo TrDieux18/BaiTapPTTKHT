@@ -62,7 +62,6 @@ const HomePage = () => {
           }
         }
       } catch (error) {
-        console.error("Failed to fetch products:", error);
       } finally {
         setLoading(false);
       }
@@ -79,7 +78,6 @@ const HomePage = () => {
         alert("Đã thêm vào giỏ hàng!");
       }
     } catch (error) {
-      console.error("Failed to add to cart:", error);
       alert("Thêm vào giỏ hàng thất bại!");
     }
   };

@@ -42,8 +42,7 @@ const EditProduct = () => {
           });
         }
       } catch (error) {
-        console.error("Failed to fetch product:", error);
-        alert("Không thể tải thông tin sản phẩm");
+        alert("Không thể tải thông tin sản phẩm!");
         navigate("/admin/products");
       } finally {
         setFetching(false);
