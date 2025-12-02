@@ -1,7 +1,7 @@
 import { createProduct } from "@/services/ProductService";
 import type { ProductForm } from "@/types/Product";
+import ProductFormComponent from "@/components/ProductForm";
 import { useState } from "react";
-import { MdArrowBack, MdSave, MdImage } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
 const CreateProduct = () => {
@@ -18,45 +18,6 @@ const CreateProduct = () => {
     isActive: true,
     slug: "",
   });
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value, type } = e.target;
-
-    if (type === "checkbox") {
-      const checked = (e.target as HTMLInputElement).checked;
-      setFormData((prev) => ({
-        ...prev,
-        [name]: checked,
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-    }
-  };
-
-  const generateSlug = (title: string) => {
-    return title
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/đ/g, "d")
-      .replace(/[^a-z0-9\s-]/g, "")
-      .trim()
-      .replace(/\s+/g, "-");
-  };
-
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const title = e.target.value;
-    setFormData((prev) => ({
-      ...prev,
-      title,
-      slug: generateSlug(title),
-    }));
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,7 +38,6 @@ const CreateProduct = () => {
       };
 
       const response = await createProduct(productData);
-      console.log("Product created:", response);
 
       if (response.success && response.data) {
         alert("Tạo sản phẩm thành công!");
@@ -86,7 +46,6 @@ const CreateProduct = () => {
         alert("Tạo sản phẩm thất bại, vui lòng thử lại!");
       }
     } catch (error) {
-      console.error("Error creating product:", error);
       alert("Có lỗi xảy ra, vui lòng thử lại!");
     } finally {
       setLoading(false);
@@ -94,274 +53,13 @@ const CreateProduct = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <button
-          onClick={() => navigate("/admin/products")}
-          className="p-2 text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded-lg transition-colors"
-        >
-          <MdArrowBack size={24} />
-        </button>
-        <div>
-          <h2 className="text-2xl font-bold text-slate-100">
-            Tạo sản phẩm mới
-          </h2>
-          <p className="text-slate-400 mt-1">Điền thông tin sản phẩm</p>
-        </div>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
-            <div className="bg-slate-900 border border-slate-800 rounded-lg p-6 space-y-4">
-              <h3 className="text-lg font-semibold text-slate-100 border-b border-slate-800 pb-3">
-                Thông tin cơ bản
-              </h3>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Tên sản phẩm <span className="text-red-400">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleTitleChange}
-                  placeholder="VD: Ổ cứng SSD 1TB NVMe"
-                  required
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-600"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Đường dẫn (Slug)
-                </label>
-                <input
-                  type="text"
-                  name="slug"
-                  value={formData.slug}
-                  onChange={handleChange}
-                  placeholder="o-cung-ssd-1tb-nvme"
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-600"
-                />
-                <p className="mt-1 text-xs text-slate-500">
-                  Tự động tạo từ tên sản phẩm
-                </p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Mô tả
-                </label>
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  rows={4}
-                  placeholder="Mô tả chi tiết về sản phẩm..."
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-600 resize-none"
-                />
-              </div>
-            </div>
-
-            <div className="bg-slate-900 border border-slate-800 rounded-lg p-6 space-y-4">
-              <h3 className="text-lg font-semibold text-slate-100 border-b border-slate-800 pb-3">
-                Giá & Khuyến mãi
-              </h3>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Giá bán (VNĐ) <span className="text-red-400">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    name="price"
-                    value={formData.price}
-                    onChange={handleChange}
-                    placeholder="1800000"
-                    min="0"
-                    required
-                    className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-600"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Giảm giá (%)
-                  </label>
-                  <input
-                    type="number"
-                    name="discountPercentage"
-                    value={formData.discountPercentage}
-                    onChange={handleChange}
-                    placeholder="12"
-                    min="0"
-                    max="100"
-                    className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-600"
-                  />
-                </div>
-              </div>
-
-              {formData.price && Number(formData.price) > 0 && (
-                <div className="bg-slate-800 border border-slate-700 rounded-lg p-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-400">Giá sau giảm:</span>
-                    <div className="text-right">
-                      <div className="text-xl font-bold text-slate-100">
-                        {new Intl.NumberFormat("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        }).format(
-                          Number(formData.price) -
-                            (Number(formData.price) *
-                              Number(formData.discountPercentage)) /
-                              100
-                        )}
-                      </div>
-                      {Number(formData.discountPercentage) > 0 && (
-                        <div className="text-sm text-slate-500 line-through">
-                          {new Intl.NumberFormat("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                          }).format(Number(formData.price))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="bg-slate-900 border border-slate-800 rounded-lg p-6 space-y-4">
-              <h3 className="text-lg font-semibold text-slate-100 border-b border-slate-800 pb-3">
-                Tồn kho & Đánh giá
-              </h3>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Số lượng tồn kho <span className="text-red-400">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    name="stock"
-                    value={formData.stock}
-                    onChange={handleChange}
-                    placeholder="40"
-                    min="0"
-                    required
-                    className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-600"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Đánh giá (1-5 sao)
-                  </label>
-                  <input
-                    type="number"
-                    name="rating"
-                    value={formData.rating}
-                    onChange={handleChange}
-                    placeholder="4.8"
-                    min="1"
-                    max="5"
-                    step="0.1"
-                    className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-600"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-6">
-            <div className="bg-slate-900 border border-slate-800 rounded-lg p-6 space-y-4">
-              <h3 className="text-lg font-semibold text-slate-100 border-b border-slate-800 pb-3">
-                Trạng thái
-              </h3>
-
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="isActive"
-                  checked={formData.isActive}
-                  onChange={handleChange}
-                  className="w-5 h-5 rounded bg-slate-800 border-slate-700 text-slate-100 focus:ring-2 focus:ring-slate-600"
-                />
-                <div>
-                  <div className="text-slate-100 font-medium">
-                    Hiển thị sản phẩm
-                  </div>
-                  <div className="text-sm text-slate-400">
-                    Sản phẩm sẽ xuất hiện trên trang chủ
-                  </div>
-                </div>
-              </label>
-            </div>
-
-            <div className="bg-slate-900 border border-slate-800 rounded-lg p-6 space-y-4">
-              <h3 className="text-lg font-semibold text-slate-100 border-b border-slate-800 pb-3">
-                Hình ảnh
-              </h3>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  URL hình ảnh
-                </label>
-                <input
-                  type="url"
-                  name="thumbnail"
-                  value={formData.thumbnail}
-                  onChange={handleChange}
-                  placeholder="https://example.com/image.jpg"
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-600"
-                />
-              </div>
-
-              {formData.thumbnail ? (
-                <div className="aspect-square rounded-lg overflow-hidden bg-slate-800">
-                  <img
-                    src={formData.thumbnail}
-                    alt="Preview"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ) : (
-                <div className="aspect-square rounded-lg bg-slate-800 border-2 border-dashed border-slate-700 flex items-center justify-center">
-                  <div className="text-center">
-                    <MdImage className="mx-auto text-slate-600" size={48} />
-                    <p className="mt-2 text-sm text-slate-500">
-                      Chưa có hình ảnh
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-3">
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full flex items-center justify-center gap-2 bg-slate-100 text-slate-900 px-6 py-3 rounded-lg font-semibold hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <MdSave size={20} />
-                {loading ? "Đang lưu..." : "Tạo sản phẩm"}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => navigate("/admin/products")}
-                className="w-full px-6 py-3 bg-slate-800 text-slate-300 rounded-lg font-semibold hover:bg-slate-700 transition-colors"
-              >
-                Hủy
-              </button>
-            </div>
-          </div>
-        </div>
-      </form>
-    </div>
+    <ProductFormComponent
+      mode="create"
+      formData={formData}
+      loading={loading}
+      onFormDataChange={setFormData}
+      onSubmit={handleSubmit}
+    />
   );
 };
 

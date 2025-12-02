@@ -1,13 +1,14 @@
 import React from "react";
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface TextAreaProps
+  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
   error?: string;
   helperText?: string;
   required?: boolean;
 }
 
-const Input = React.forwardRef<HTMLInputElement, InputProps>(
+const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
   ({ label, error, helperText, required, className = "", ...props }, ref) => {
     return (
       <div>
@@ -16,9 +17,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {label} {required && <span className="text-red-400">*</span>}
           </label>
         )}
-        <input
+        <textarea
           ref={ref}
-          className={`w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-600 ${
+          className={`w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-600 resize-none ${
             error ? "border-red-500 focus:ring-red-500" : ""
           } ${className}`}
           {...props}
@@ -32,6 +33,6 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
   }
 );
 
-Input.displayName = "Input";
+TextArea.displayName = "TextArea";
 
-export default Input;
+export default TextArea;

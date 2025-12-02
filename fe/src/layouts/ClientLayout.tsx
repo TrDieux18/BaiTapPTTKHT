@@ -1,13 +1,8 @@
 import React from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 
-import {
-  LuFacebook,
-  LuInstagram,
-  LuLayoutDashboard,
-  LuTwitter,
-  LuUser,
-} from "react-icons/lu";
+import { MdFacebook, MdDashboard, MdPerson } from "react-icons/md";
+import { FaTwitter, FaInstagram } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "@/store/store";
 import { logout } from "@/store/UserReducer";
@@ -16,6 +11,8 @@ const ClientLayout: React.FC = () => {
   const navigate = useNavigate();
 
   const user = useSelector((state: RootState) => state.user.user);
+  const cart = useSelector((state: RootState) => state.cart);
+  console.log("ClientLayout cart:", cart.length);
 
   const dispatch = useDispatch();
 
@@ -30,7 +27,7 @@ const ClientLayout: React.FC = () => {
         <div className="container mx-auto px-6 py-2">
           <div className="flex justify-between items-center">
             <NavLink to="/" className="flex items-center gap-2 group">
-              <div className=" p-2 rounded-lg group-hover:bg-slate-700 transition-all">
+              <div className="p-2 rounded-lg group-hover:bg-slate-700 transition-all">
                 <img
                   src="/download.jpg"
                   alt="Logo"
@@ -46,7 +43,7 @@ const ClientLayout: React.FC = () => {
                   onClick={() => navigate("/admin")}
                   className="text-slate-300  hover:text-slate-100 transition-colors flex items-center gap-1 bg-slate-500 px-2 py-2 rounded-full"
                 >
-                  <LuLayoutDashboard size={20} /> Trang quản trị
+                  <MdDashboard size={20} /> Trang quản trị
                 </button>
               )}
 
@@ -54,13 +51,13 @@ const ClientLayout: React.FC = () => {
                 onClick={() => (user ? handleLogout() : navigate("/login"))}
                 className="text-slate-300  hover:text-slate-100 transition-colors flex items-center gap-1 bg-slate-500 px-2 py-2 rounded-full"
               >
-                <LuUser size={20} /> {user ? "Đăng xuất" : "Đăng nhập"}
+                <MdPerson size={20} /> {user ? "Đăng xuất" : "Đăng nhập"}
               </button>
             </div>
           </div>
 
-          <nav className="hidden md:block mt-4 border-t border-slate-800 pt-4">
-            <ul className="flex gap-8 justify-center text-slate-300 font-medium">
+          <nav className="hidden md:block  border-t border-slate-800 pt-5">
+            <ul className="flex gap-10 justify-center text-slate-300 text-lg font-medium">
               <li>
                 <NavLink
                   to="/"
@@ -92,6 +89,9 @@ const ClientLayout: React.FC = () => {
                   {({ isActive }) => (
                     <>
                       Giỏ hàng
+                      <span className="absolute top-0 right--1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">
+                        {cart.length}
+                      </span>
                       {isActive && (
                         <span className="absolute bottom-0 left-0 w-full h-0.5 bg-slate-100" />
                       )}
@@ -250,19 +250,19 @@ const ClientLayout: React.FC = () => {
                   href="#"
                   className="bg-slate-900 p-3 text-center rounded-lg hover:bg-slate-800 transition-colors border border-slate-800"
                 >
-                  <LuFacebook size={20} />
+                  <MdFacebook size={20} />
                 </a>
                 <a
                   href="#"
                   className="bg-slate-900 p-3 rounded-lg hover:bg-slate-800 transition-colors border border-slate-800"
                 >
-                  <LuTwitter size={20} />
+                  <FaTwitter size={20} />
                 </a>
                 <a
                   href="#"
                   className="bg-slate-900 p-3 rounded-lg hover:bg-slate-800 transition-colors border border-slate-800"
                 >
-                  <LuInstagram size={20} />
+                  <FaInstagram size={20} />
                 </a>
               </div>
             </div>

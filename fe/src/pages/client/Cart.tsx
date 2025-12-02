@@ -84,7 +84,7 @@ const CartPage = () => {
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
-      {/* Header */}
+     
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold text-slate-100">
@@ -107,7 +107,7 @@ const CartPage = () => {
 
       {cartList.length > 0 ? (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Cart Items */}
+         
           <div className="lg:col-span-2 space-y-4">
             {cartList.map((item) => (
               <div
@@ -129,7 +129,7 @@ const CartPage = () => {
                     />
                   </div>
 
-                  {/* Product Info */}
+                  
                   <div className="flex-1 flex flex-col">
                     {/* Title & Remove */}
                     <div className="flex justify-between items-start mb-3">
@@ -186,14 +186,14 @@ const CartPage = () => {
             ))}
           </div>
 
-          {/* Order Summary */}
+          
           <div className="lg:col-span-1">
             <div className="bg-slate-900 border border-slate-800 rounded-lg p-6 space-y-4 sticky top-6">
               <h3 className="text-lg font-semibold text-slate-100 border-b border-slate-800 pb-3">
                 Tóm tắt đơn hàng
               </h3>
 
-              {/* Subtotal */}
+              
               <div className="space-y-2">
                 <div className="flex justify-between text-slate-400">
                   <span>Tạm tính</span>

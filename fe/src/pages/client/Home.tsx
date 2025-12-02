@@ -5,10 +5,18 @@ import type { AppDispatch } from "@/store/store";
 import type { Product } from "@/types/Product";
 import type { ApiResponse } from "@/types/Response";
 import { formatPrice } from "@/helpers/formatPrice";
-import { Search, ShoppingCart, Star } from "lucide-react";
+import SearchInput from "@/components/SearchInput";
+import CategorySelect from "@/components/CategorySelect";
+import Pagination from "@/components/Pagination";
+import { CATEGORIES } from "@/constants/categories";
+import {
+  MdShoppingCart,
+  MdStar,
+  MdAttachMoney,
+  MdFlashOn,
+  MdCheckCircle,
+} from "react-icons/md";
 import { useEffect, useState } from "react";
-import { AiOutlineDollarCircle, AiOutlineThunderbolt } from "react-icons/ai";
-import { TiTick } from "react-icons/ti";
 import { useDispatch } from "react-redux";
 
 const HomePage = () => {
@@ -22,15 +30,6 @@ const HomePage = () => {
   const itemsPerPage = 8;
 
   const dispatch = useDispatch<AppDispatch>();
-  const categories = [
-    { value: "all", label: "Tất cả " },
-    { value: "ao", label: "Áo" },
-    { value: "quan", label: "Quần" },
-    { value: "giay", label: "Giày" },
-    { value: "dep", label: "Dép" },
-    { value: "tui", label: "Túi" },
-    { value: "mu", label: "Mũ" },
-  ];
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -97,37 +96,22 @@ const HomePage = () => {
   return (
     <div className="space-y-4 px-8">
       <div className="flex flex-col md:flex-row gap-4 mb-6">
-        <div className="flex-1 relative">
-          <Search
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-            size={20}
-          />
-          <input
-            type="text"
-            placeholder="Tìm kiếm sản phẩm..."
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="w-full pl-12 pr-4 py-3 bg-slate-900 border border-slate-800 rounded-lg text-slate-100 placeholder-slate-400 focus:border-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-700"
-          />
-        </div>
-
-        <select
-          value={selectedCategory}
-          onChange={(e) => {
-            setSelectedCategory(e.target.value);
+        <SearchInput
+          value={searchTerm}
+          onChange={(value) => {
+            setSearchTerm(value);
             setCurrentPage(1);
           }}
-          className="px-4 py-3 bg-slate-900 border border-slate-800 rounded-lg text-slate-100 focus:border-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-700 min-w-[200px]"
-        >
-          {categories.map((category) => (
-            <option key={category.value} value={category.value}>
-              {category.label}
-            </option>
-          ))}
-        </select>
+        />
+
+        <CategorySelect
+          value={selectedCategory}
+          onChange={(value) => {
+            setSelectedCategory(value);
+            setCurrentPage(1);
+          }}
+          categories={CATEGORIES}
+        />
       </div>
 
       <div>
@@ -150,7 +134,7 @@ const HomePage = () => {
                   <img
                     src={product.thumbnail}
                     alt={product.title}
-                    className="w-full h-55 object-contain group-hover:scale-110 transition-transform duration-500"
+                    className="w-full h-55 object-contain group-hover:scale-120 transition-transform duration-500"
                     loading="lazy"
                   />
 
@@ -168,10 +152,7 @@ const HomePage = () => {
                 <div className="p-5 space-y-3">
                   <div className="flex items-center gap-2">
                     <div className="flex items-center gap-1">
-                      <Star
-                        className="text-yellow-400 fill-yellow-400"
-                        size={16}
-                      />
+                      <MdStar className="text-yellow-400" size={16} />
                       <span className="text-slate-100 font-semibold">
                         {product.rating}
                       </span>
@@ -181,7 +162,7 @@ const HomePage = () => {
                     </span>
                   </div>
 
-                  <h3 className="text-lg font-bold text-slate-100 line-clamp-2 min-h-14">
+                  <h3 className="text-lg font-bold text-slate-100 line-clamp-2 min-h-14 group-hover:underline">
                     {product.title}
                   </h3>
 
@@ -208,7 +189,7 @@ const HomePage = () => {
                     onClick={() => handleAddToCart(product)}
                     className="w-full bg-slate-800 hover:bg-slate-700 text-slate-100 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 group-hover:bg-slate-100 group-hover:text-slate-900"
                   >
-                    <ShoppingCart size={20} />
+                    <MdShoppingCart size={20} />
                     Thêm vào giỏ hàng
                   </button>
                 </div>
@@ -217,51 +198,17 @@ const HomePage = () => {
           })}
         </div>
 
-        {totalPages > 1 && (
-          <div className="flex justify-center items-center gap-2 mt-8">
-            <button
-              onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-              disabled={currentPage === 1}
-              className="px-4 py-2 bg-slate-800 text-slate-100 rounded-lg hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              Trước
-            </button>
-
-            <div className="flex gap-2">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                (page) => (
-                  <button
-                    key={page}
-                    onClick={() => setCurrentPage(page)}
-                    className={`px-4 py-2 rounded-lg transition-colors ${
-                      currentPage === page
-                        ? "bg-slate-100 text-slate-900 font-semibold"
-                        : "bg-slate-800 text-slate-100 hover:bg-slate-700"
-                    }`}
-                  >
-                    {page}
-                  </button>
-                )
-              )}
-            </div>
-
-            <button
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(totalPages, prev + 1))
-              }
-              disabled={currentPage === totalPages}
-              className="px-4 py-2 bg-slate-800 text-slate-100 rounded-lg hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              Sau
-            </button>
-          </div>
-        )}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8">
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 text-center">
           <div className="bg-slate-800 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-            <TiTick size={32} className="text-slate-100" />
+            <MdCheckCircle size={32} className="text-slate-100" />
           </div>
           <h3 className="text-slate-100 font-bold text-lg mb-2">
             Chính hãng 100%
@@ -273,7 +220,7 @@ const HomePage = () => {
 
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 text-center">
           <div className="bg-slate-800 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-            <AiOutlineDollarCircle size={32} className="text-slate-100" />
+            <MdAttachMoney size={32} className="text-slate-100" />
           </div>
           <h3 className="text-slate-100 font-bold text-lg mb-2">
             Giá tốt nhất
@@ -285,7 +232,7 @@ const HomePage = () => {
 
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 text-center">
           <div className="bg-slate-800 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-            <AiOutlineThunderbolt size={32} className="text-slate-100" />
+            <MdFlashOn size={32} className="text-slate-100" />
           </div>
           <h3 className="text-slate-100 font-bold text-lg mb-2">
             Giao hàng nhanh

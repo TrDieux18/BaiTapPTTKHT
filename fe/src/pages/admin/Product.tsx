@@ -2,7 +2,10 @@ import { deleteProduct, getAllProducts } from "@/services/ProductService";
 import type { Product } from "@/types/Product";
 import type { ApiResponse } from "@/types/Response";
 import { formatPrice } from "@/helpers/formatPrice";
-import { Search } from "lucide-react";
+import SearchInput from "@/components/SearchInput";
+import CategorySelect from "@/components/CategorySelect";
+import Pagination from "@/components/Pagination";
+import { CATEGORIES } from "@/constants/categories";
 import { useEffect, useState } from "react";
 import { MdEdit, MdDelete, MdAdd } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
@@ -15,19 +18,9 @@ const ProductPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 8;
 
   const navigate = useNavigate();
-
-  const categories = [
-    { value: "all", label: "Tất cả" },
-    { value: "ao", label: "Áo" },
-    { value: "quan", label: "Quần" },
-    { value: "giay", label: "Giày" },
-    { value: "dep", label: "Dép" },
-    { value: "tui", label: "Túi" },
-    { value: "mu", label: "Mũ" },
-  ];
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -121,37 +114,22 @@ const ProductPage = () => {
       </div>
 
       <div className="flex flex-col md:flex-row gap-4">
-        <div className="flex-1 relative">
-          <Search
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-            size={20}
-          />
-          <input
-            type="text"
-            placeholder="Tìm kiếm sản phẩm..."
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="w-full pl-12 pr-4 py-3 bg-slate-900 border border-slate-800 rounded-lg text-slate-100 placeholder-slate-400 focus:border-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-700"
-          />
-        </div>
-
-        <select
-          value={selectedCategory}
-          onChange={(e) => {
-            setSelectedCategory(e.target.value);
+        <SearchInput
+          value={searchTerm}
+          onChange={(value) => {
+            setSearchTerm(value);
             setCurrentPage(1);
           }}
-          className="px-4 py-3 bg-slate-900 border border-slate-800 rounded-lg text-slate-100 focus:border-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-700 min-w-[200px]"
-        >
-          {categories.map((category) => (
-            <option key={category.value} value={category.value}>
-              {category.label}
-            </option>
-          ))}
-        </select>
+        />
+
+        <CategorySelect
+          value={selectedCategory}
+          onChange={(value) => {
+            setSelectedCategory(value);
+            setCurrentPage(1);
+          }}
+          categories={CATEGORIES}
+        />
       </div>
 
       <div className="bg-slate-900 border border-slate-800 rounded-lg overflow-hidden">
@@ -250,43 +228,11 @@ const ProductPage = () => {
         </div>
       </div>
 
-      {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-2">
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-            disabled={currentPage === 1}
-            className="px-4 py-2 bg-slate-800 text-slate-100 rounded-lg hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            Trước
-          </button>
-
-          <div className="flex gap-2">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <button
-                key={page}
-                onClick={() => setCurrentPage(page)}
-                className={`px-4 py-2 rounded-lg transition-colors ${
-                  currentPage === page
-                    ? "bg-slate-100 text-slate-900 font-semibold"
-                    : "bg-slate-800 text-slate-100 hover:bg-slate-700"
-                }`}
-              >
-                {page}
-              </button>
-            ))}
-          </div>
-
-          <button
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(totalPages, prev + 1))
-            }
-            disabled={currentPage === totalPages}
-            className="px-4 py-2 bg-slate-800 text-slate-100 rounded-lg hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            Sau
-          </button>
-        </div>
-      )}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 };

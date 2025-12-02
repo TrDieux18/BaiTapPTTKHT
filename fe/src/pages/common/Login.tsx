@@ -3,7 +3,7 @@ import type { AppDispatch, RootState } from "@/store/store";
 import { setUser } from "@/store/UserReducer";
 import type { ApiResponse } from "@/types/Response";
 import type { User } from "@/types/User";
-
+import Input from "@/components/Input";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -42,41 +42,25 @@ const Login = () => {
         </h1>
 
         <form className="mt-6 space-y-6" onSubmit={handleSubmit}>
-          <div>
-            <label
-              htmlFor="username"
-              className="block text-sm font-medium text-slate-200"
-            >
-              Tên đăng nhập
-            </label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="mt-1 block w-full rounded-md border border-slate-700 bg-slate-800 py-2 px-3 text-slate-100 placeholder-slate-400"
-              placeholder="Nhập tên đăng nhập của bạn"
-            />
-          </div>
+          <Input
+            type="text"
+            id="username"
+            name="username"
+            label="Tên đăng nhập"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Nhập tên đăng nhập của bạn"
+          />
 
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-slate-200"
-            >
-              Mật khẩu
-            </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full rounded-md border border-slate-700 bg-slate-800 py-2 px-3 text-slate-100 placeholder-slate-400"
-              placeholder="Nhập mật khẩu của bạn"
-            />
-          </div>
+          <Input
+            type="password"
+            id="password"
+            name="password"
+            label="Mật khẩu"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Nhập mật khẩu của bạn"
+          />
 
           <button
             type="submit"
