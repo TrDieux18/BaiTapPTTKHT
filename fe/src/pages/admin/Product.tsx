@@ -1,6 +1,8 @@
 import { deleteProduct, getAllProducts } from "@/services/ProductService";
 import type { Product } from "@/types/Product";
 import type { ApiResponse } from "@/types/Response";
+import { formatPrice } from "@/helpers/formatPrice";
+import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { MdEdit, MdDelete, MdAdd } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
@@ -8,16 +10,52 @@ import { useNavigate } from "react-router-dom";
 const ProductPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const itemsPerPage = 10;
 
   const navigate = useNavigate();
+
+  const categories = [
+    { value: "all", label: "Tất cả" },
+    { value: "ao", label: "Áo" },
+    { value: "quan", label: "Quần" },
+    { value: "giay", label: "Giày" },
+    { value: "dep", label: "Dép" },
+    { value: "tui", label: "Túi" },
+    { value: "mu", label: "Mũ" },
+  ];
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const response: ApiResponse<Product[]> = await getAllProducts();
+        const params: Record<string, string> = {
+          page: currentPage.toString(),
+          limit: itemsPerPage.toString(),
+        };
+
+        if (debouncedSearchTerm) params.search = debouncedSearchTerm;
+        if (selectedCategory && selectedCategory !== "all")
+          params.category = selectedCategory;
+
+        const response: ApiResponse<Product[]> = await getAllProducts(params);
         if (response.success && response.data) {
           setProducts(response.data);
+          if (response.totalPages) {
+            setTotalPages(response.totalPages);
+          }
         }
       } catch (error) {
         console.error("Failed to fetch products:", error);
@@ -27,21 +65,13 @@ const ProductPage = () => {
     };
 
     fetchProducts();
-  }, []);
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(price);
-  };
+  }, [currentPage, debouncedSearchTerm, selectedCategory]);
 
   const handleEdit = (id: string) => {
     navigate(`/admin/products/edit/${id}`);
   };
 
   const handleDelete = async (id: string) => {
-    console.log("Deleting product with id:", id);
     if (!id) return;
     const confirmDelete = window.confirm(
       "Bạn có chắc chắn muốn xóa sản phẩm này?"
@@ -64,10 +94,6 @@ const ProductPage = () => {
     }
   };
 
-  const filteredProducts = products.filter((product) =>
-    product.title.toLowerCase()
-  );
-
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -84,7 +110,7 @@ const ProductPage = () => {
             Quản lý sản phẩm
           </h2>
           <p className="text-slate-400 mt-1">
-            Tổng số: {filteredProducts.length} sản phẩm
+            Tổng số: {products.length} sản phẩm
           </p>
         </div>
         <button
@@ -94,6 +120,40 @@ const ProductPage = () => {
           <MdAdd size={20} />
           Thêm sản phẩm
         </button>
+      </div>
+
+      <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex-1 relative">
+          <Search
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+            size={20}
+          />
+          <input
+            type="text"
+            placeholder="Tìm kiếm sản phẩm..."
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="w-full pl-12 pr-4 py-3 bg-slate-900 border border-slate-800 rounded-lg text-slate-100 placeholder-slate-400 focus:border-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-700"
+          />
+        </div>
+
+        <select
+          value={selectedCategory}
+          onChange={(e) => {
+            setSelectedCategory(e.target.value);
+            setCurrentPage(1);
+          }}
+          className="px-4 py-3 bg-slate-900 border border-slate-800 rounded-lg text-slate-100 focus:border-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-700 min-w-[200px]"
+        >
+          {categories.map((category) => (
+            <option key={category.value} value={category.value}>
+              {category.label}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="bg-slate-900 border border-slate-800 rounded-lg overflow-hidden">
@@ -119,7 +179,7 @@ const ProductPage = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800">
-              {filteredProducts.map((product) => (
+              {products.map((product) => (
                 <tr
                   key={product._id}
                   className="hover:bg-slate-800/50 transition-colors"
@@ -182,7 +242,7 @@ const ProductPage = () => {
             </tbody>
           </table>
 
-          {filteredProducts.length === 0 && (
+          {products.length === 0 && (
             <div className="text-center py-12">
               <div className="text-slate-400 text-lg">
                 Không tìm thấy sản phẩm nào
@@ -191,6 +251,44 @@ const ProductPage = () => {
           )}
         </div>
       </div>
+
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-2">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+            disabled={currentPage === 1}
+            className="px-4 py-2 bg-slate-800 text-slate-100 rounded-lg hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            Trước
+          </button>
+
+          <div className="flex gap-2">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`px-4 py-2 rounded-lg transition-colors ${
+                  currentPage === page
+                    ? "bg-slate-100 text-slate-900 font-semibold"
+                    : "bg-slate-800 text-slate-100 hover:bg-slate-700"
+                }`}
+              >
+                {page}
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+            }
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 bg-slate-800 text-slate-100 rounded-lg hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            Sau
+          </button>
+        </div>
+      )}
     </div>
   );
 };

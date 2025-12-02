@@ -1,51 +1,44 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { Cart } from "@/types/Cart";
+import type { Cart, CartItem } from "@/types/Cart";
 import type { Product } from "@/types/Product";
 
-interface UpdateQuantityPayload {
-   productId: string;
+interface LocalCartItem {
+   _id: string;
+   product: Product;
    quantity: number;
 }
 
-const initialState: Cart[] = JSON.parse(localStorage.getItem("cart") || "[]");
+type CartState = LocalCartItem[];
+
+const initialState: CartState = [];
 
 const cartSlice = createSlice({
    name: "cart",
    initialState,
    reducers: {
-      addToCart: (state, action: PayloadAction<{ product: Product }>) => {
-         const product = action.payload.product;
-         const existingItem = state.find((item) => item._id === product._id);
-         if (existingItem) {
-            existingItem.quantity += 1;
-         } else {
-            state.push({
-               _id: product._id,
-               product,
-               quantity: 1,
-            });
-         }
-         localStorage.setItem("cart", JSON.stringify(state));
-      },
-      updateQuantity: (state, action: PayloadAction<UpdateQuantityPayload>) => {
-         const item = state.find(i => i._id === action.payload.productId);
-         if (item) {
-            item.quantity = Math.max(1, item.quantity + action.payload.quantity);
-         }
-         localStorage.setItem("cart", JSON.stringify(state));
+      setCart: (_state, action: PayloadAction<Cart>) => {
+         const cartData = action.payload;
+         const localCart: LocalCartItem[] = cartData.products.map((item: CartItem) => ({
+            _id: item.productId._id,
+            product: item.productId,
+            quantity: item.quantity,
+         }));
+         return localCart;
       },
       removeFromCart: (state, action: PayloadAction<{ productId: string }>) => {
-         const newState = state.filter(item => item._id !== action.payload.productId);
-         localStorage.setItem("cart", JSON.stringify(newState));
-         return newState;
+         return state.filter(item => item._id !== action.payload.productId);
       },
       clearCart: () => {
-         localStorage.removeItem("cart");
          return [];
+      },
+      updateQuantity: (state, action: PayloadAction<{ productId: string; quantity: number }>) => {
+         const item = state.find(i => i._id === action.payload.productId);
+         if (item) {
+            item.quantity = action.payload.quantity;
+         }
       },
    },
 });
 
-export const { addToCart, updateQuantity, removeFromCart, clearCart } =
-   cartSlice.actions;
+export const { setCart, removeFromCart, clearCart, updateQuantity } = cartSlice.actions;
 export default cartSlice.reducer;

@@ -1,29 +1,65 @@
 import { getAllProducts } from "@/services/ProductService";
-import { addToCart, updateQuantity } from "@/store/CartReducer";
-import type { AppDispatch, RootState } from "@/store/store";
-import type { Cart } from "@/types/Cart";
+import * as CartService from "@/services/CartService";
+import { setCart } from "@/store/CartReducer";
+import type { AppDispatch } from "@/store/store";
 import type { Product } from "@/types/Product";
 import type { ApiResponse } from "@/types/Response";
-import { ShoppingCart, Star } from "lucide-react";
+import { formatPrice } from "@/helpers/formatPrice";
+import { Search, ShoppingCart, Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AiOutlineDollarCircle, AiOutlineThunderbolt } from "react-icons/ai";
 import { TiTick } from "react-icons/ti";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 const HomePage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const cart: Cart[] = useSelector((state: RootState) => state.cart);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const itemsPerPage = 8;
 
   const dispatch = useDispatch<AppDispatch>();
+  const categories = [
+    { value: "all", label: "Tất cả " },
+    { value: "ao", label: "Áo" },
+    { value: "quan", label: "Quần" },
+    { value: "giay", label: "Giày" },
+    { value: "dep", label: "Dép" },
+    { value: "tui", label: "Túi" },
+    { value: "mu", label: "Mũ" },
+  ];
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const response: ApiResponse<Product[]> = await getAllProducts();
-        console.log(response);
+        const params: Record<string, string> = {
+          page: currentPage.toString(),
+          limit: itemsPerPage.toString(),
+        };
+
+        if (debouncedSearchTerm) params.search = debouncedSearchTerm;
+        if (selectedCategory && selectedCategory !== "all")
+          params.category = selectedCategory;
+
+        const response: ApiResponse<Product[]> = await getAllProducts(params);
+
         if (response.success && response.data) {
           setProducts(response.data);
+          if (response.totalPages) {
+            setTotalPages(response.totalPages);
+          }
         }
       } catch (error) {
         console.error("Failed to fetch products:", error);
@@ -33,25 +69,23 @@ const HomePage = () => {
     };
 
     fetchProducts();
-  }, []);
+  }, [currentPage, debouncedSearchTerm, selectedCategory]);
 
-  const handleAddToCart = (product: Product) => {
-    if (cart.some((item) => item._id === product._id)) {
-      dispatch(updateQuantity({ productId: product._id, quantity: 1 }));
-    } else {
-      dispatch(addToCart({ product }));
+  const handleAddToCart = async (product: Product) => {
+    try {
+      const response = await CartService.addToCart(product._id);
+      if (response.success && response.data) {
+        dispatch(setCart(response.data));
+        alert("Đã thêm vào giỏ hàng!");
+      }
+    } catch (error) {
+      console.error("Failed to add to cart:", error);
+      alert("Thêm vào giỏ hàng thất bại!");
     }
   };
 
   const calculateDiscountedPrice = (price: number, discount: number) => {
     return price - (price * discount) / 100;
-  };
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(price);
   };
 
   if (loading) {
@@ -63,7 +97,41 @@ const HomePage = () => {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4 px-8">
+      <div className="flex flex-col md:flex-row gap-4 mb-6">
+        <div className="flex-1 relative">
+          <Search
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+            size={20}
+          />
+          <input
+            type="text"
+            placeholder="Tìm kiếm sản phẩm..."
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="w-full pl-12 pr-4 py-3 bg-slate-900 border border-slate-800 rounded-lg text-slate-100 placeholder-slate-400 focus:border-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-700"
+          />
+        </div>
+
+        <select
+          value={selectedCategory}
+          onChange={(e) => {
+            setSelectedCategory(e.target.value);
+            setCurrentPage(1);
+          }}
+          className="px-4 py-3 bg-slate-900 border border-slate-800 rounded-lg text-slate-100 focus:border-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-700 min-w-[200px]"
+        >
+          {categories.map((category) => (
+            <option key={category.value} value={category.value}>
+              {category.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <div>
         <h2 className="text-3xl font-bold text-slate-100 mb-6">
           Sản Phẩm Nổi Bật
@@ -80,11 +148,11 @@ const HomePage = () => {
                 key={product._id}
                 className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden hover:border-slate-700 transition-all duration-300 group"
               >
-                <div className="relative overflow-hidden bg-slate-800 w-full h-64 ">
+                <div className="relative overflow-hidden bg-[#F2F2F2] w-full h-55 ">
                   <img
                     src={product.thumbnail}
                     alt={product.title}
-                    className="w-full h-auto object-cover group-hover:scale-110 transition-transform duration-500"
+                    className="w-full h-55 object-contain group-hover:scale-110 transition-transform duration-500"
                     loading="lazy"
                   />
 
@@ -119,10 +187,6 @@ const HomePage = () => {
                     {product.title}
                   </h3>
 
-                  <p className="text-slate-400 text-sm line-clamp-2 min-h-10">
-                    {product.description}
-                  </p>
-
                   <div className="pt-2 border-t border-slate-800">
                     {product.discountPercentage > 0 ? (
                       <div className="space-y-1">
@@ -154,6 +218,46 @@ const HomePage = () => {
             );
           })}
         </div>
+
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-2 mt-8">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+              className="px-4 py-2 bg-slate-800 text-slate-100 rounded-lg hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Trước
+            </button>
+
+            <div className="flex gap-2">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (page) => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`px-4 py-2 rounded-lg transition-colors ${
+                      currentPage === page
+                        ? "bg-slate-100 text-slate-900 font-semibold"
+                        : "bg-slate-800 text-slate-100 hover:bg-slate-700"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                )
+              )}
+            </div>
+
+            <button
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+              }
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 bg-slate-800 text-slate-100 rounded-lg hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Sau
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8">

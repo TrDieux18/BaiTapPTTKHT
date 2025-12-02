@@ -4,9 +4,9 @@ const axiosClient = axios.create({
    baseURL: "http://localhost:3000",
 });
 
-export const getAllProducts = async () => {
+export const getAllProducts = async (params?: Record<string, string>) => {
    try {
-      const response = await axiosClient.get("/products");
+      const response = await axiosClient.get("/products", { params });
       return response.data;
    } catch (error: any) {
       console.error("Failed to fetch products:", error.message);

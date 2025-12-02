@@ -5,7 +5,6 @@ import {
   LuFacebook,
   LuInstagram,
   LuLayoutDashboard,
-  LuShoppingBag,
   LuTwitter,
   LuUser,
 } from "react-icons/lu";
@@ -28,27 +27,18 @@ const ClientLayout: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col bg-slate-950">
       <header className="bg-slate-900 border-b border-slate-800 shadow-xl sticky top-0 z-50">
-        <div className="container mx-auto px-6 py-4">
+        <div className="container mx-auto px-6 py-2">
           <div className="flex justify-between items-center">
             <NavLink to="/" className="flex items-center gap-2 group">
-              <div className="bg-slate-800 p-2 rounded-lg group-hover:bg-slate-700 transition-all">
-                <LuShoppingBag className="text-slate-100" size={28} />
-              </div>
-              <h1 className="text-3xl font-bold text-slate-100">My Shop</h1>
-            </NavLink>
-
-            {/* <div className="hidden md:flex flex-1 max-w-xl mx-8">
-              <div className="relative w-full">
-                <input
-                  type="text"
-                  placeholder="Search products..."
-                  className="w-full py-3 px-5 pr-12 rounded-lg bg-slate-800 border border-slate-700 text-slate-100 placeholder-slate-400 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-600 transition-all"
+              <div className=" p-2 rounded-lg group-hover:bg-slate-700 transition-all">
+                <img
+                  src="/download.jpg"
+                  alt="Logo"
+                  className="w-14 h-14 object-cover rounded-full"
                 />
-                <button className="absolute right-2 top-1/2 -translate-y-1/2 bg-slate-700 text-slate-100 p-2 rounded-lg hover:bg-slate-600 transition-colors">
-                  <LuSearch size={20} />
-                </button>
               </div>
-            </div> */}
+              <h1 className="text-3xl font-bold text-slate-100">Dark Hawk</h1>
+            </NavLink>
 
             <div className="flex items-center gap-6">
               {user?.role === "admin" && (
