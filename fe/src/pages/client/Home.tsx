@@ -1,5 +1,6 @@
 import { getAllProducts } from "@/services/ProductService";
 import * as CartService from "@/services/CartService";
+import * as InvoiceService from "@/services/InvoiceService";
 import { setCart } from "@/store/CartReducer";
 import type { AppDispatch, RootState } from "@/store/store";
 import type { Product } from "@/types/Product";
@@ -82,6 +83,44 @@ const HomePage = () => {
       }
     } catch (error) {
       alert("Thêm vào giỏ hàng thất bại!");
+    }
+  };
+
+  const handleBuyNow = async (product: Product) => {
+    if (!user) {
+      alert("Vui lòng đăng nhập!");
+      navigate("/login");
+      return;
+    }
+
+    const discountedPrice =
+      product.discountPercentage > 0
+        ? calculateDiscountedPrice(product.price, product.discountPercentage)
+        : product.price;
+
+    const products = [
+      {
+        productId: product._id,
+        quantity: 1,
+        price: discountedPrice,
+      },
+    ];
+
+    try {
+      const response = await InvoiceService.createInvoice(
+        user._id,
+        products,
+        false
+      );
+
+      if (response.success) {
+        alert("Đặt hàng thành công!");
+        navigate("/invoices");
+      } else {
+        alert("Đặt hàng thất bại!");
+      }
+    } catch (error: any) {
+      alert(error.response?.data?.message || "Có lỗi xảy ra!");
     }
   };
 
@@ -189,6 +228,16 @@ const HomePage = () => {
                       </span>
                     )}
                   </div>
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      user ? handleBuyNow(product) : navigate("/login");
+                    }}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
+                  >
+                    {user ? "Mua ngay" : "Đăng nhập để mua"}
+                  </button>
 
                   <button
                     onClick={(e) => {

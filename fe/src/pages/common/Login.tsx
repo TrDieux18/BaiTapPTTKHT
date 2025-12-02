@@ -1,6 +1,8 @@
 import { loginUser } from "@/services/UserService";
+import * as CartService from "@/services/CartService";
 import type { AppDispatch, RootState } from "@/store/store";
 import { setUser } from "@/store/UserReducer";
+import { setCart } from "@/store/CartReducer";
 import type { ApiResponse } from "@/types/Response";
 import type { User } from "@/types/User";
 import Input from "@/components/Input";
@@ -28,10 +30,13 @@ const Login = () => {
       const response: ApiResponse<User> = await loginUser(username, password);
       if (response.success && response.data) {
         dispatch(setUser(response.data));
+
+        const cartResponse = await CartService.getCart();
+        if (cartResponse.success && cartResponse.data) {
+          dispatch(setCart(cartResponse.data));
+        }
       }
-    } catch (error: any) {
-      console.error("Login failed:", error.message);
-    }
+    } catch (error: any) {}
   };
 
   return (

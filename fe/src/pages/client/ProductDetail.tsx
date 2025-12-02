@@ -1,7 +1,8 @@
 import { getProductById } from "@/services/ProductService";
 import * as CartService from "@/services/CartService";
+import * as InvoiceService from "@/services/InvoiceService";
 import { setCart } from "@/store/CartReducer";
-import type { AppDispatch } from "@/store/store";
+import type { AppDispatch, RootState } from "@/store/store";
 import type { Product } from "@/types/Product";
 import { formatPrice } from "@/helpers/formatPrice";
 import {
@@ -13,12 +14,13 @@ import {
 } from "react-icons/md";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
+  const user = useSelector((state: RootState) => state.user.user);
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -46,6 +48,12 @@ const ProductDetail = () => {
   const handleAddToCart = async () => {
     if (!product) return;
 
+    if (!user) {
+      alert("Vui lòng đăng nhập!");
+      navigate("/login");
+      return;
+    }
+
     try {
       const response = await CartService.addToCart(product._id, 1);
       if (response.success && response.data) {
@@ -54,6 +62,47 @@ const ProductDetail = () => {
       }
     } catch (error) {
       alert("Thêm vào giỏ hàng thất bại!");
+    }
+  };
+
+  const handleBuyNow = async () => {
+    if (!product) return;
+
+    if (!user) {
+      alert("Vui lòng đăng nhập!");
+      navigate("/login");
+      return;
+    }
+
+    const products = [
+      {
+        productId: product._id,
+        quantity: 1,
+        price:
+          product.discountPercentage > 0
+            ? calculateDiscountedPrice(
+                product.price,
+                product.discountPercentage
+              )
+            : product.price,
+      },
+    ];
+
+    try {
+      const response = await InvoiceService.createInvoice(
+        user._id,
+        products,
+        false
+      );
+
+      if (response.success) {
+        alert("Đặt hàng thành công!");
+        navigate("/invoices");
+      } else {
+        alert("Đặt hàng thất bại!");
+      }
+    } catch (error: any) {
+      alert(error.response?.data?.message || "Có lỗi xảy ra!");
     }
   };
 
@@ -159,6 +208,14 @@ const ProductDetail = () => {
 
           <div className="space-y-4">
             <button
+              onClick={handleBuyNow}
+              disabled={product.stock === 0}
+              className="w-full flex items-center justify-center gap-3 bg-blue-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {product.stock === 0 ? "Hết hàng" : "Mua ngay"}
+            </button>
+
+            <button
               onClick={handleAddToCart}
               disabled={product.stock === 0}
               className="w-full flex items-center justify-center gap-3 bg-slate-100 text-slate-900 py-4 rounded-xl font-bold text-lg hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -186,27 +243,6 @@ const ProductDetail = () => {
               <div>
                 <div className="text-slate-100 font-semibold">Miễn phí</div>
                 <div className="text-slate-400 text-sm">Giao hàng nhanh</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <span className="text-slate-400">Mã sản phẩm:</span>
-                <span className="text-slate-100 ml-2 font-mono">
-                  #{product._id.slice(-8).toUpperCase()}
-                </span>
-              </div>
-              <div>
-                <span className="text-slate-400">Trạng thái:</span>
-                <span
-                  className={`ml-2 font-semibold ${
-                    product.stock > 0 ? "text-green-400" : "text-red-400"
-                  }`}
-                >
-                  {product.stock > 0 ? "Còn hàng" : "Hết hàng"}
-                </span>
               </div>
             </div>
           </div>

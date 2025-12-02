@@ -1,6 +1,7 @@
 
 import type { User } from "@/types/User";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { clearCart } from "./CartReducer";
 
 interface UserState {
    user: User | null;
@@ -27,6 +28,10 @@ const UserSlice = createSlice({
          localStorage.removeItem('user');
          state.error = null;
       },
+   },
+   extraReducers: (builder) => {
+      builder.addCase(clearCart, () => {
+      });
    },
 });
 

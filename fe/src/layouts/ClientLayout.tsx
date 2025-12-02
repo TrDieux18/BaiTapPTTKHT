@@ -6,18 +6,19 @@ import { FaTwitter, FaInstagram } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "@/store/store";
 import { logout } from "@/store/UserReducer";
+import { clearCart } from "@/store/CartReducer";
 
 const ClientLayout: React.FC = () => {
   const navigate = useNavigate();
 
   const user = useSelector((state: RootState) => state.user.user);
   const cart = useSelector((state: RootState) => state.cart);
-  console.log("ClientLayout cart:", cart.length);
 
   const dispatch = useDispatch();
 
   const handleLogout = () => {
     dispatch(logout());
+    dispatch(clearCart());
     navigate("/login");
   };
 
@@ -92,6 +93,26 @@ const ClientLayout: React.FC = () => {
                       <span className="absolute top-0 right--1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">
                         {cart.length}
                       </span>
+                      {isActive && (
+                        <span className="absolute bottom-0 left-0 w-full h-0.5 bg-slate-100" />
+                      )}
+                    </>
+                  )}
+                </NavLink>
+              </li>
+
+              <li>
+                <NavLink
+                  to="/invoices"
+                  className={({ isActive }) =>
+                    `relative py-2 hover:text-slate-100 transition-colors ${
+                      isActive ? "text-slate-100" : ""
+                    }`
+                  }
+                >
+                  {({ isActive }) => (
+                    <>
+                      Đơn hàng
                       {isActive && (
                         <span className="absolute bottom-0 left-0 w-full h-0.5 bg-slate-100" />
                       )}

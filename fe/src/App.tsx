@@ -11,7 +11,9 @@ import CreateProduct from "./pages/admin/CreateProduct";
 
 import CartPage from "@/pages/client/Cart";
 import ProductDetail from "./pages/client/ProductDetail";
+import InvoiceList from "./pages/client/InvoiceList";
 import Dashboard from "./pages/admin/Dashboard";
+import AdminInvoice from "./pages/admin/Invoice";
 
 function App() {
   const user = useSelector((state: RootState) => state.user.user);
@@ -24,6 +26,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/products/:id" element={<ProductDetail />} />
+        <Route path="/invoices" element={<InvoiceList />} />
       </Route>
 
       {user?.role === "admin" && (
@@ -32,6 +35,7 @@ function App() {
           <Route path="products" element={<Product />} />
           <Route path="products/edit/:id" element={<EditProduct />} />
           <Route path="products/new" element={<CreateProduct />} />
+          <Route path="invoices" element={<AdminInvoice />} />
         </Route>
       )}
 

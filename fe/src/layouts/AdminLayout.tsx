@@ -10,9 +10,11 @@ import {
   MdKeyboardArrowDown,
   MdHome,
   MdAdminPanelSettings,
+  MdReceipt,
 } from "react-icons/md";
 import { useDispatch } from "react-redux";
 import { logout } from "@/store/UserReducer";
+import { clearCart } from "@/store/CartReducer";
 
 const AdminLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -23,6 +25,7 @@ const AdminLayout: React.FC = () => {
 
   const handleLogout = () => {
     dispatch(logout());
+    dispatch(clearCart());
     navigate("/login");
   };
 
@@ -92,6 +95,20 @@ const AdminLayout: React.FC = () => {
           >
             <MdInventory size={20} />
             {sidebarOpen && <span className="font-medium">Sản phẩm</span>}
+          </NavLink>
+
+          <NavLink
+            to="/admin/invoices"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                isActive
+                  ? "bg-slate-800 text-slate-100"
+                  : "text-slate-400 hover:bg-slate-800 hover:text-slate-100"
+              }`
+            }
+          >
+            <MdReceipt size={20} />
+            {sidebarOpen && <span className="font-medium">Hóa đơn</span>}
           </NavLink>
         </nav>
 

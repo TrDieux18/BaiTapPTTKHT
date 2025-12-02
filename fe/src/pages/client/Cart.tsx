@@ -1,4 +1,5 @@
 import * as CartService from "@/services/CartService";
+import * as InvoiceService from "@/services/InvoiceService";
 import { setCart } from "@/store/CartReducer";
 import type { AppDispatch, RootState } from "@/store/store";
 import type { LocalCartItem } from "@/types/Cart";
@@ -6,12 +7,15 @@ import { formatPrice } from "@/helpers/formatPrice";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { MdDelete, MdRemove, MdAdd, MdShoppingCart } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 
 const CartPage = () => {
+  const user = useSelector((state: RootState) => state.user.user);
   const cartList: LocalCartItem[] = useSelector(
     (state: RootState) => state.cart
   );
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -74,6 +78,42 @@ const CartPage = () => {
     } catch (error) {}
   };
 
+  const handleCheckout = async () => {
+    if (!user) {
+      alert("Vui lòng đăng nhập để thanh toán!");
+      navigate("/login");
+      return;
+    }
+
+    if (cartList.length === 0) {
+      alert("Giỏ hàng trống!");
+      return;
+    }
+
+    const products = cartList.map((item) => ({
+      productId: item.product._id,
+      quantity: item.quantity,
+      price: item.product.price,
+    }));
+
+    try {
+      const response = await InvoiceService.createInvoice(
+        user._id,
+        products,
+        true
+      );
+
+      if (response.success) {
+        alert("Đặt hàng thành công!");
+        navigate("/invoices");
+      } else {
+        alert("Đặt hàng thất bại!");
+      }
+    } catch (error) {
+      alert("Có lỗi xảy ra!");
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -84,7 +124,6 @@ const CartPage = () => {
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
-     
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold text-slate-100">
@@ -107,7 +146,6 @@ const CartPage = () => {
 
       {cartList.length > 0 ? (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-         
           <div className="lg:col-span-2 space-y-4">
             {cartList.map((item) => (
               <div
@@ -115,7 +153,7 @@ const CartPage = () => {
                 className="bg-slate-900 border border-slate-800 rounded-lg p-4 hover:border-slate-700 transition-colors"
               >
                 <div className="flex gap-4">
-                  {/* Product Image */}
+                 
                   <div className="w-24 h-24 shrink-0 overflow-hidden rounded-lg bg-slate-800">
                     <img
                       src={item.product.thumbnail}
@@ -129,9 +167,8 @@ const CartPage = () => {
                     />
                   </div>
 
-                  
                   <div className="flex-1 flex flex-col">
-                    {/* Title & Remove */}
+                   
                     <div className="flex justify-between items-start mb-3">
                       <h3 className="text-lg font-semibold text-slate-100 line-clamp-2">
                         {item.product.title}
@@ -145,9 +182,9 @@ const CartPage = () => {
                       </button>
                     </div>
 
-                    {/* Quantity & Price */}
+                    
                     <div className="mt-auto flex items-center justify-between">
-                      {/* Quantity Controls */}
+                      
                       <div className="flex items-center gap-3 bg-slate-800 border border-slate-700 rounded-lg p-1">
                         <button
                           onClick={() =>
@@ -170,7 +207,7 @@ const CartPage = () => {
                         </button>
                       </div>
 
-                      {/* Price */}
+                 
                       <div className="text-right">
                         <p className="text-sm text-slate-400">
                           {formatPrice(item.product.price)} x {item.quantity}
@@ -186,14 +223,12 @@ const CartPage = () => {
             ))}
           </div>
 
-          
           <div className="lg:col-span-1">
             <div className="bg-slate-900 border border-slate-800 rounded-lg p-6 space-y-4 sticky top-6">
               <h3 className="text-lg font-semibold text-slate-100 border-b border-slate-800 pb-3">
                 Tóm tắt đơn hàng
               </h3>
 
-              
               <div className="space-y-2">
                 <div className="flex justify-between text-slate-400">
                   <span>Tạm tính</span>
@@ -205,7 +240,7 @@ const CartPage = () => {
                 </div>
               </div>
 
-              {/* Total */}
+             
               <div className="border-t border-slate-800 pt-4">
                 <div className="flex justify-between items-center">
                   <span className="text-lg font-semibold text-slate-100">
@@ -217,12 +252,15 @@ const CartPage = () => {
                 </div>
               </div>
 
-              {/* Checkout Button */}
-              <button className="w-full bg-slate-100 text-slate-900 py-3 rounded-lg font-semibold hover:bg-white transition-colors">
+             
+              <button
+                onClick={handleCheckout}
+                className="w-full bg-slate-100 text-slate-900 py-3 rounded-lg font-semibold hover:bg-white transition-colors"
+              >
                 Thanh toán
               </button>
 
-              {/* Continue Shopping */}
+             
               <a
                 href="/"
                 className="block w-full bg-slate-800 text-slate-300 py-3 rounded-lg font-semibold hover:bg-slate-700 transition-colors text-center"
@@ -230,7 +268,7 @@ const CartPage = () => {
                 Tiếp tục mua hàng
               </a>
 
-              {/* Additional Info */}
+             
               <div className="bg-slate-800 border border-slate-700 rounded-lg p-4 mt-4">
                 <div className="space-y-2 text-sm text-slate-400">
                   <div className="flex items-start gap-2">
@@ -251,7 +289,7 @@ const CartPage = () => {
           </div>
         </div>
       ) : (
-        /* Empty Cart */
+       
         <div className="bg-slate-900 border border-slate-800 rounded-lg p-12">
           <div className="text-center max-w-md mx-auto space-y-4">
             <div className="bg-slate-800 w-24 h-24 rounded-full flex items-center justify-center mx-auto">

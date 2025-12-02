@@ -1,19 +1,28 @@
 import { useEffect, useState } from "react";
-
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import type { RootState } from "@/store/store";
 import type { Invoice } from "@/types/Invoice";
 import * as InvoiceService from "@/services/InvoiceService";
 import { formatPrice } from "@/helpers/formatPrice";
-import { MdReceipt, MdShoppingBag, MdPerson } from "react-icons/md";
+import { MdArrowBack, MdReceipt, MdShoppingBag } from "react-icons/md";
 
-const AdminInvoice = () => {
+const InvoiceList = () => {
+  const user = useSelector((state: RootState) => state.user.user);
+  const navigate = useNavigate();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
     const fetchInvoices = async () => {
       try {
         setLoading(true);
-        const response = await InvoiceService.getAllInvoices();
+        const response = await InvoiceService.getInvoicesByUser(user._id);
         if (response.success && response.data) {
           setInvoices(response.data);
         }
@@ -25,7 +34,7 @@ const AdminInvoice = () => {
     };
 
     fetchInvoices();
-  }, []);
+  }, [user, navigate]);
 
   if (loading) {
     return (
@@ -36,14 +45,24 @@ const AdminInvoice = () => {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 px-8">
+      <button
+        onClick={() => navigate(-1)}
+        className="flex items-center gap-2 text-slate-400 hover:text-slate-100 transition-colors"
+      >
+        <MdArrowBack size={24} />
+        <span>Quay lại</span>
+      </button>
+
       <div className="flex items-center gap-3 mb-6">
         <div className="bg-slate-800 p-3 rounded-lg">
           <MdReceipt size={32} className="text-slate-100" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold text-slate-100">Quản lý hóa đơn</h1>
-          <p className="text-slate-400">Tổng số {invoices.length} hóa đơn</p>
+          <h1 className="text-3xl font-bold text-slate-100">
+            Đơn hàng của tôi
+          </h1>
+          <p className="text-slate-400">{invoices.length} đơn hàng</p>
         </div>
       </div>
 
@@ -53,9 +72,17 @@ const AdminInvoice = () => {
             <MdShoppingBag size={40} className="text-slate-400" />
           </div>
           <h3 className="text-xl font-semibold text-slate-100 mb-2">
-            Chưa có hóa đơn nào
+            Chưa có đơn hàng nào
           </h3>
-          <p className="text-slate-400">Chưa có đơn hàng nào trong hệ thống</p>
+          <p className="text-slate-400 mb-6">
+            Bạn chưa có đơn hàng nào. Hãy mua sắm ngay!
+          </p>
+          <button
+            onClick={() => navigate("/")}
+            className="bg-slate-100 text-slate-900 px-6 py-3 rounded-lg font-semibold hover:bg-white transition-colors"
+          >
+            Về trang chủ
+          </button>
         </div>
       ) : (
         <div className="space-y-4">
@@ -70,14 +97,6 @@ const AdminInvoice = () => {
                     <MdReceipt size={20} className="text-slate-400" />
                     <span className="text-slate-400 text-sm">
                       Mã đơn hàng: #{invoice._id.slice(-8).toUpperCase()}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <MdPerson size={20} className="text-slate-400" />
-                    <span className="text-slate-400 text-sm">
-                      {typeof invoice.userId === "string"
-                        ? `User ID: ${invoice.userId}`
-                        : `User: ${(invoice.userId as any).username}`}
                     </span>
                   </div>
                   <p className="text-slate-400 text-sm">
@@ -99,6 +118,7 @@ const AdminInvoice = () => {
                 <div className="space-y-2">
                   {invoice.products.map((item, index) => {
                     const isPopulated = typeof item.productId !== "string";
+                    
                     const productTitle = isPopulated
                       ? (item.productId as any).title
                       : `SP #${(item.productId as string)
@@ -140,4 +160,4 @@ const AdminInvoice = () => {
   );
 };
 
-export default AdminInvoice;
+export default InvoiceList;
