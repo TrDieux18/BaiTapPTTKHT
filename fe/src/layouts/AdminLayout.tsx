@@ -9,6 +9,7 @@ import {
   MdPerson,
   MdKeyboardArrowDown,
   MdHome,
+  MdAdminPanelSettings,
 } from "react-icons/md";
 import { useDispatch } from "react-redux";
 import { logout } from "@/store/UserReducer";
@@ -37,7 +38,7 @@ const AdminLayout: React.FC = () => {
             {sidebarOpen ? (
               <div className="flex items-center gap-2">
                 <div className="bg-slate-800 p-2 rounded-lg">
-                  <MdInventory className="text-slate-100" size={24} />
+                  <MdAdminPanelSettings className="text-slate-100" size={24} />
                 </div>
                 <span className="text-xl font-bold text-slate-100">Admin</span>
               </div>

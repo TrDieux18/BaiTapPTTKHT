@@ -22,6 +22,8 @@ export const getProductById = async (id: string) => {
    }
 };
 
+
+
 export const updateProduct = async (productData: any) => {
    try {
       const response = await axiosClient.patch(

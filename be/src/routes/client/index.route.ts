@@ -8,6 +8,7 @@ router.post("/login", login);
 router.get("/products", getAllProducts);
 router.get("/products/:id", getProductById);
 
+
 router.get("/cart/:userId", getCart);
 router.post("/cart/add", addToCart);
 router.patch("/cart/update", updateCartItem);

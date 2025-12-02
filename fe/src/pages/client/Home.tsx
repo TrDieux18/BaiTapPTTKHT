@@ -1,7 +1,7 @@
 import { getAllProducts } from "@/services/ProductService";
 import * as CartService from "@/services/CartService";
 import { setCart } from "@/store/CartReducer";
-import type { AppDispatch } from "@/store/store";
+import type { AppDispatch, RootState } from "@/store/store";
 import type { Product } from "@/types/Product";
 import type { ApiResponse } from "@/types/Response";
 import { formatPrice } from "@/helpers/formatPrice";
@@ -17,9 +17,11 @@ import {
   MdCheckCircle,
 } from "react-icons/md";
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const HomePage = () => {
+  const user = useSelector((state: RootState) => state.user.user);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -28,6 +30,8 @@ const HomePage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const itemsPerPage = 8;
+
+  const navigate = useNavigate();
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -127,6 +131,7 @@ const HomePage = () => {
 
             return (
               <div
+                onClick={() => navigate(`products/${product._id}`)}
                 key={product._id}
                 className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden hover:border-slate-700 transition-all duration-300 group"
               >
@@ -186,11 +191,20 @@ const HomePage = () => {
                   </div>
 
                   <button
-                    onClick={() => handleAddToCart(product)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      user ? handleAddToCart(product) : navigate("/login");
+                    }}
                     className="w-full bg-slate-800 hover:bg-slate-700 text-slate-100 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 group-hover:bg-slate-100 group-hover:text-slate-900"
                   >
-                    <MdShoppingCart size={20} />
-                    Thêm vào giỏ hàng
+                    {user ? (
+                      <>
+                        <MdShoppingCart size={20} />
+                        Thêm vào giỏ hàng
+                      </>
+                    ) : (
+                      "Đăng nhập để thêm vào giỏ hàng"
+                    )}
                   </button>
                 </div>
               </div>

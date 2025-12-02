@@ -10,6 +10,8 @@ import EditProduct from "./pages/admin/EditProduct";
 import CreateProduct from "./pages/admin/CreateProduct";
 
 import CartPage from "@/pages/client/Cart";
+import ProductDetail from "./pages/client/ProductDetail";
+import Dashboard from "./pages/admin/Dashboard";
 
 function App() {
   const user = useSelector((state: RootState) => state.user.user);
@@ -21,10 +23,12 @@ function App() {
       <Route element={<ClientLayout />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/cart" element={<CartPage />} />
+        <Route path="/products/:id" element={<ProductDetail />} />
       </Route>
 
       {user?.role === "admin" && (
         <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<Dashboard />} />
           <Route path="products" element={<Product />} />
           <Route path="products/edit/:id" element={<EditProduct />} />
           <Route path="products/new" element={<CreateProduct />} />

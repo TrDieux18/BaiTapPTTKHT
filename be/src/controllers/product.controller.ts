@@ -1,3 +1,4 @@
+
 import { Types } from "mongoose";
 import { Product } from "../models/product.model";
 import { Request, Response } from "express";
@@ -106,6 +107,7 @@ export const getProductById = async (req: Request, res: Response) => {
       res.status(500).json({ message: error.message });
    }
 };
+
 
 
 export const deleteProduct = async (req: Request, res: Response) => {
