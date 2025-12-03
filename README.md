@@ -2,7 +2,7 @@
 
 Hệ thống website thương mại điện tử được xây dựng với mục đích quản lý và bán hàng trực tuyến, bao gồm trang khách hàng và trang quản trị.
 
-![Homepage](./screenshots/homepage.png)
+![Homepage](./fe/public/homepage.png)
 _Giao diện trang chủ với danh sách sản phẩm nổi bật_
 
 ## 🚀 Tính năng
@@ -22,7 +22,7 @@ _Giao diện trang chủ với danh sách sản phẩm nổi bật_
 - 🧾 **Quản lý hóa đơn**: Xem danh sách đơn hàng từ khách hàng
 - 📈 **Báo cáo**: Top sản phẩm bán chạy, đơn hàng gần đây
 
-![Admin Dashboard](./screenshots/admin.png)
+![Admin Dashboard](./fe/public/admin.png)
 _Trang quản trị với thống kê tổng quan hệ thống_
 
 ## 🛠️ Công nghệ sử dụng
