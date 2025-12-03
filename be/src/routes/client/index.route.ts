@@ -1,11 +1,12 @@
 import { getAllProducts, getProductById } from "../../controllers/product.controller";
-import { login } from "../../controllers/user.controller";
+import { login, register } from "../../controllers/user.controller";
 import { getCart, addToCart, updateCartItem, removeFromCart, clearCart } from "../../controllers/cart.controller";
 import { createInvoice, getInvoicesByUser } from "../../controllers/invoice.controller";
 import express from "express";
 const router = express.Router();
 
 router.post("/login", login);
+router.post("/register", register);
 router.get("/products", getAllProducts);
 router.get("/products/:id", getProductById);
 

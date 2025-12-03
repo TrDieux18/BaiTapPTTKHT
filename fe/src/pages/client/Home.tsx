@@ -89,7 +89,7 @@ const HomePage = () => {
   const handleBuyNow = async (product: Product) => {
     if (!user) {
       alert("Vui lòng đăng nhập!");
-      navigate("/login");
+      navigate("/auth");
       return;
     }
 
@@ -232,7 +232,7 @@ const HomePage = () => {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      user ? handleBuyNow(product) : navigate("/login");
+                      user ? handleBuyNow(product) : navigate("/auth");
                     }}
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
                   >
@@ -242,7 +242,7 @@ const HomePage = () => {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      user ? handleAddToCart(product) : navigate("/login");
+                      user ? handleAddToCart(product) : navigate("/auth");
                     }}
                     className="w-full bg-slate-800 hover:bg-slate-700 text-slate-100 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 group-hover:bg-slate-100 group-hover:text-slate-900"
                   >

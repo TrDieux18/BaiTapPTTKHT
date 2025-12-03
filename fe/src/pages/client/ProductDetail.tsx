@@ -50,7 +50,7 @@ const ProductDetail = () => {
 
     if (!user) {
       alert("Vui lòng đăng nhập!");
-      navigate("/login");
+      navigate("/auth");
       return;
     }
 
@@ -70,7 +70,7 @@ const ProductDetail = () => {
 
     if (!user) {
       alert("Vui lòng đăng nhập!");
-      navigate("/login");
+      navigate("/auth");
       return;
     }
 

@@ -26,7 +26,7 @@ const AdminLayout: React.FC = () => {
   const handleLogout = () => {
     dispatch(logout());
     dispatch(clearCart());
-    navigate("/login");
+    navigate("/auth");
   };
 
   return (

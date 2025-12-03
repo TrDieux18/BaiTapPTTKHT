@@ -15,7 +15,7 @@ const InvoiceList = () => {
 
   useEffect(() => {
     if (!user) {
-      navigate("/login");
+      navigate("/auth");
       return;
     }
 
@@ -118,7 +118,7 @@ const InvoiceList = () => {
                 <div className="space-y-2">
                   {invoice.products.map((item, index) => {
                     const isPopulated = typeof item.productId !== "string";
-                    
+
                     const productTitle = isPopulated
                       ? (item.productId as any).title
                       : `SP #${(item.productId as string)

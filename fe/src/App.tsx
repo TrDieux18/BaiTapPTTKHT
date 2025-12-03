@@ -2,7 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import ClientLayout from "@/layouts/ClientLayout";
 import AdminLayout from "@/layouts/AdminLayout";
 import HomePage from "@/pages/client/Home";
-import Login from "@/pages/common/Login";
+import Auth from "@/pages/common/Auth";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/store/store";
 import Product from "./pages/admin/Product";
@@ -20,7 +20,9 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
+      <Route path="/auth" element={user ? <Navigate to="/" /> : <Auth />} />
+      <Route path="/login" element={<Navigate to="/auth" />} />
+      <Route path="/register" element={<Navigate to="/auth" />} />
 
       <Route element={<ClientLayout />}>
         <Route path="/" element={<HomePage />} />

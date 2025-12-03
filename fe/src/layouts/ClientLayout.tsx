@@ -19,7 +19,7 @@ const ClientLayout: React.FC = () => {
   const handleLogout = () => {
     dispatch(logout());
     dispatch(clearCart());
-    navigate("/login");
+    navigate("/auth");
   };
 
   return (
@@ -49,7 +49,7 @@ const ClientLayout: React.FC = () => {
               )}
 
               <button
-                onClick={() => (user ? handleLogout() : navigate("/login"))}
+                onClick={() => (user ? handleLogout() : navigate("/auth"))}
                 className="text-slate-300  hover:text-slate-100 transition-colors flex items-center gap-1 bg-slate-500 px-2 py-2 rounded-full"
               >
                 <MdPerson size={20} /> {user ? "Đăng xuất" : "Đăng nhập"}

@@ -81,7 +81,7 @@ const CartPage = () => {
   const handleCheckout = async () => {
     if (!user) {
       alert("Vui lòng đăng nhập để thanh toán!");
-      navigate("/login");
+      navigate("/auth");
       return;
     }
 
@@ -153,7 +153,6 @@ const CartPage = () => {
                 className="bg-slate-900 border border-slate-800 rounded-lg p-4 hover:border-slate-700 transition-colors"
               >
                 <div className="flex gap-4">
-                 
                   <div className="w-24 h-24 shrink-0 overflow-hidden rounded-lg bg-slate-800">
                     <img
                       src={item.product.thumbnail}
@@ -168,7 +167,6 @@ const CartPage = () => {
                   </div>
 
                   <div className="flex-1 flex flex-col">
-                   
                     <div className="flex justify-between items-start mb-3">
                       <h3 className="text-lg font-semibold text-slate-100 line-clamp-2">
                         {item.product.title}
@@ -182,9 +180,7 @@ const CartPage = () => {
                       </button>
                     </div>
 
-                    
                     <div className="mt-auto flex items-center justify-between">
-                      
                       <div className="flex items-center gap-3 bg-slate-800 border border-slate-700 rounded-lg p-1">
                         <button
                           onClick={() =>
@@ -207,7 +203,6 @@ const CartPage = () => {
                         </button>
                       </div>
 
-                 
                       <div className="text-right">
                         <p className="text-sm text-slate-400">
                           {formatPrice(item.product.price)} x {item.quantity}
@@ -240,7 +235,6 @@ const CartPage = () => {
                 </div>
               </div>
 
-             
               <div className="border-t border-slate-800 pt-4">
                 <div className="flex justify-between items-center">
                   <span className="text-lg font-semibold text-slate-100">
@@ -252,7 +246,6 @@ const CartPage = () => {
                 </div>
               </div>
 
-             
               <button
                 onClick={handleCheckout}
                 className="w-full bg-slate-100 text-slate-900 py-3 rounded-lg font-semibold hover:bg-white transition-colors"
@@ -260,7 +253,6 @@ const CartPage = () => {
                 Thanh toán
               </button>
 
-             
               <a
                 href="/"
                 className="block w-full bg-slate-800 text-slate-300 py-3 rounded-lg font-semibold hover:bg-slate-700 transition-colors text-center"
@@ -268,7 +260,6 @@ const CartPage = () => {
                 Tiếp tục mua hàng
               </a>
 
-             
               <div className="bg-slate-800 border border-slate-700 rounded-lg p-4 mt-4">
                 <div className="space-y-2 text-sm text-slate-400">
                   <div className="flex items-start gap-2">
@@ -289,7 +280,6 @@ const CartPage = () => {
           </div>
         </div>
       ) : (
-       
         <div className="bg-slate-900 border border-slate-800 rounded-lg p-12">
           <div className="text-center max-w-md mx-auto space-y-4">
             <div className="bg-slate-800 w-24 h-24 rounded-full flex items-center justify-center mx-auto">
