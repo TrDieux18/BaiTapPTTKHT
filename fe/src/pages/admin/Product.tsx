@@ -138,6 +138,9 @@ const ProductPage = () => {
             <thead className="bg-slate-800 border-b border-slate-700">
               <tr>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                  Hình ảnh
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">
                   Tên sản phẩm
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">
@@ -159,7 +162,18 @@ const ProductPage = () => {
                 <tr
                   key={product._id}
                   className="hover:bg-slate-800/50 transition-colors"
+                  onClick={() =>
+                    navigate(`/admin/products/edit/${product._id}`)
+                  }
                 >
+                  <td className="px-6 py-4">
+                    <img
+                      src={product.thumbnail}
+                      alt={product.title}
+                      className="w-16 h-16 object-cover rounded-lg border border-slate-700"
+                    />
+                  </td>
+
                   <td className="px-6 py-4">
                     <div className="font-semibold text-slate-100">
                       {product.title}

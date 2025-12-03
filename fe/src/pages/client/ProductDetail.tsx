@@ -210,7 +210,7 @@ const ProductDetail = () => {
             <button
               onClick={handleBuyNow}
               disabled={product.stock === 0}
-              className="w-full flex items-center justify-center gap-3 bg-blue-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-3 bg-slate-100 text-slate-900 py-4 rounded-xl font-bold text-lg hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {product.stock === 0 ? "Hết hàng" : "Mua ngay"}
             </button>

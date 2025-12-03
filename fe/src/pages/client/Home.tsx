@@ -234,7 +234,7 @@ const HomePage = () => {
                       e.stopPropagation();
                       user ? handleBuyNow(product) : navigate("/auth");
                     }}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
+                    className="w-full bg-slate-300 text-slate-900 py-3 rounded-lg font-semibold hover:bg-white transition-colors"
                   >
                     {user ? "Mua ngay" : "Đăng nhập để mua"}
                   </button>
