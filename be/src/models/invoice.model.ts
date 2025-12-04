@@ -8,6 +8,7 @@ export interface IInvoice extends Document {
       price: number;
    }[];
    totalAmount: number;
+   status: "pending" | "paid" | "cancelled";
    createdAt: Date;
 }
 
@@ -38,6 +39,11 @@ const InvoiceSchema: Schema = new Schema(
       totalAmount: {
          type: Number,
          required: true,
+      },
+      status: {
+         type: String,
+         enum: ["pending", "paid", "cancelled"],
+         default: "pending",
       },
    },
    {

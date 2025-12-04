@@ -10,5 +10,6 @@ export interface Invoice {
       price: number;
    }[];
    totalAmount: number;
+   status: "pending" | "paid" | "cancelled";
    createdAt: string;
 }

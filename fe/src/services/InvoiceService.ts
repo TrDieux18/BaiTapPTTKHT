@@ -38,3 +38,12 @@ export const getAllInvoices = async () => {
       throw error;
    }
 };
+
+export const updateInvoiceStatus = async (id: string, status: "pending" | "paid" | "cancelled") => {
+   try {
+      const response = await axiosClient.patch(`/admin/invoices/${id}/status`, { status });
+      return response.data;
+   } catch (error: any) {
+      throw error;
+   }
+};

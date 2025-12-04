@@ -4,10 +4,13 @@ import type { Invoice } from "@/types/Invoice";
 import * as InvoiceService from "@/services/InvoiceService";
 import { formatPrice } from "@/helpers/formatPrice";
 import { MdReceipt, MdShoppingBag, MdPerson } from "react-icons/md";
+import SearchInput from "@/components/SearchInput";
 
 const AdminInvoice = () => {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [filteredInvoices, setFilteredInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const fetchInvoices = async () => {
@@ -16,6 +19,7 @@ const AdminInvoice = () => {
         const response = await InvoiceService.getAllInvoices();
         if (response.success && response.data) {
           setInvoices(response.data);
+          setFilteredInvoices(response.data);
         }
       } catch (error) {
         alert("Không thể tải danh sách hóa đơn!");
@@ -26,6 +30,79 @@ const AdminInvoice = () => {
 
     fetchInvoices();
   }, []);
+
+  useEffect(() => {
+    if (!searchTerm.trim()) {
+      setFilteredInvoices(invoices);
+      return;
+    }
+
+    const searchLower = searchTerm.toLowerCase();
+    const filtered = invoices.filter((invoice) => {
+      const invoiceId = invoice._id.slice(-8).toUpperCase();
+      const username =
+        typeof invoice.userId === "string"
+          ? ""
+          : (invoice.userId as any).username || "";
+
+      return (
+        invoiceId.includes(searchLower.toUpperCase()) ||
+        username.toLowerCase().includes(searchLower)
+      );
+    });
+
+    setFilteredInvoices(filtered);
+  }, [searchTerm, invoices]);
+
+  const handleStatusChange = async (
+    invoiceId: string,
+    newStatus: "pending" | "paid" | "cancelled"
+  ) => {
+    try {
+      const response = await InvoiceService.updateInvoiceStatus(
+        invoiceId,
+        newStatus
+      );
+      if (response.success) {
+        setInvoices((prev) =>
+          prev.map((inv) =>
+            inv._id === invoiceId ? { ...inv, status: newStatus } : inv
+          )
+        );
+        alert("Cập nhật trạng thái thành công!");
+      }
+    } catch (error) {
+      alert("Cập nhật trạng thái thất bại!");
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
+    const statusConfig = {
+      pending: {
+        label: "Chờ xử lý",
+        className: "bg-yellow-900/20 text-yellow-400 border-yellow-800",
+      },
+      paid: {
+        label: "Đã thanh toán",
+        className: "bg-green-900/20 text-green-400 border-green-800",
+      },
+      cancelled: {
+        label: "Đã hủy",
+        className: "bg-red-900/20 text-red-400 border-red-800",
+      },
+    };
+
+    const config =
+      statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
+
+    return (
+      <span
+        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${config.className}`}
+      >
+        {config.label}
+      </span>
+    );
+  };
 
   if (loading) {
     return (
@@ -43,23 +120,36 @@ const AdminInvoice = () => {
         </div>
         <div>
           <h1 className="text-3xl font-bold text-slate-100">Quản lý hóa đơn</h1>
-          <p className="text-slate-400">Tổng số {invoices.length} hóa đơn</p>
+          <p className="text-slate-400">
+            Tổng số {filteredInvoices.length} hóa đơn
+            {searchTerm && ` (lọc từ ${invoices.length})`}
+          </p>
         </div>
       </div>
 
-      {invoices.length === 0 ? (
+      <SearchInput
+        value={searchTerm}
+        onChange={setSearchTerm}
+        placeholder="Tìm theo mã đơn hàng hoặc tên người dùng..."
+      />
+
+      {filteredInvoices.length === 0 ? (
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-12 text-center">
           <div className="bg-slate-800 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
             <MdShoppingBag size={40} className="text-slate-400" />
           </div>
           <h3 className="text-xl font-semibold text-slate-100 mb-2">
-            Chưa có hóa đơn nào
+            {searchTerm ? "Không tìm thấy hóa đơn" : "Chưa có hóa đơn nào"}
           </h3>
-          <p className="text-slate-400">Chưa có đơn hàng nào trong hệ thống</p>
+          <p className="text-slate-400">
+            {searchTerm
+              ? "Không có hóa đơn nào khớp với từ khóa tìm kiếm"
+              : "Chưa có đơn hàng nào trong hệ thống"}
+          </p>
         </div>
       ) : (
         <div className="space-y-4">
-          {invoices.map((invoice) => (
+          {filteredInvoices.map((invoice) => (
             <div
               key={invoice._id}
               className="bg-slate-900 border border-slate-800 rounded-xl p-6 hover:border-slate-700 transition-colors"
@@ -89,10 +179,11 @@ const AdminInvoice = () => {
                   <p className="text-2xl font-bold text-slate-100">
                     {formatPrice(invoice.totalAmount)}
                   </p>
+                  <div className="mt-2">{getStatusBadge(invoice.status)}</div>
                 </div>
               </div>
 
-              <div className="border-t border-slate-800 pt-4">
+              <div className="border-t border-slate-800 pt-4 mb-4">
                 <h4 className="text-slate-100 font-semibold mb-3">
                   Sản phẩm ({invoice.products.length})
                 </h4>
@@ -131,6 +222,26 @@ const AdminInvoice = () => {
                     );
                   })}
                 </div>
+              </div>
+
+              <div className="border-t border-slate-800 pt-4 mt-4">
+                <label className="block text-slate-400 text-sm mb-2">
+                  Cập nhật trạng thái:
+                </label>
+                <select
+                  value={invoice.status}
+                  onChange={(e) =>
+                    handleStatusChange(
+                      invoice._id,
+                      e.target.value as "pending" | "paid" | "cancelled"
+                    )
+                  }
+                  className="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-slate-100 focus:outline-none focus:border-slate-500"
+                >
+                  <option value="pending">Chờ xử lý</option>
+                  <option value="paid">Đã thanh toán</option>
+                  <option value="cancelled">Đã hủy</option>
+                </select>
               </div>
             </div>
           ))}

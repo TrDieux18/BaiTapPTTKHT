@@ -121,6 +121,28 @@ const ClientLayout: React.FC = () => {
                 </NavLink>
               </li>
 
+              {user && (
+                <li>
+                  <NavLink
+                    to="/profile"
+                    className={({ isActive }) =>
+                      `relative py-2 hover:text-slate-100 transition-colors ${
+                        isActive ? "text-slate-100" : ""
+                      }`
+                    }
+                  >
+                    {({ isActive }) => (
+                      <>
+                        Thông tin cá nhân
+                        {isActive && (
+                          <span className="absolute bottom-0 left-0 w-full h-0.5 bg-slate-100" />
+                        )}
+                      </>
+                    )}
+                  </NavLink>
+                </li>
+              )}
+
               <li>
                 <NavLink
                   to="/about"

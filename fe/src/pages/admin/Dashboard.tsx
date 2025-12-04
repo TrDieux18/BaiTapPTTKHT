@@ -166,6 +166,11 @@ const Dashboard = () => {
                   <div className="bg-slate-700 w-10 h-10 rounded-lg flex items-center justify-center text-slate-100 font-bold shrink-0">
                     {index + 1}
                   </div>
+                  <img
+                    src={product.thumbnail}
+                    alt={product.title}
+                    className="w-12 h-12 object-cover rounded-lg border border-slate-700 shrink-0"
+                  />
                   <div className="flex-1 min-w-0">
                     <p className="text-slate-100 font-medium truncate">
                       {product.title}
@@ -186,7 +191,6 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Recent Invoices */}
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold text-slate-100">
@@ -223,7 +227,6 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Quick Actions */}
       <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
         <h2 className="text-xl font-bold text-slate-100 mb-4">
           Thao tác nhanh

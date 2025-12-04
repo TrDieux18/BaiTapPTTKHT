@@ -110,6 +110,20 @@ const AdminLayout: React.FC = () => {
             <MdReceipt size={20} />
             {sidebarOpen && <span className="font-medium">Hóa đơn</span>}
           </NavLink>
+
+          <NavLink
+            to="/admin/users"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                isActive
+                  ? "bg-slate-800 text-slate-100"
+                  : "text-slate-400 hover:bg-slate-800 hover:text-slate-100"
+              }`
+            }
+          >
+            <MdPerson size={20} />
+            {sidebarOpen && <span className="font-medium">Người dùng</span>}
+          </NavLink>
         </nav>
 
         <div className="p-4 border-t border-slate-800">

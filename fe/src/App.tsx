@@ -8,10 +8,13 @@ import type { RootState } from "@/store/store";
 import Product from "./pages/admin/Product";
 import EditProduct from "./pages/admin/EditProduct";
 import CreateProduct from "./pages/admin/CreateProduct";
+import UserManagement from "./pages/admin/User";
 
 import CartPage from "@/pages/client/Cart";
 import ProductDetail from "./pages/client/ProductDetail";
 import InvoiceList from "./pages/client/InvoiceList";
+import ProfilePage from "./pages/client/Profile";
+import AboutPage from "./pages/client/About";
 import Dashboard from "./pages/admin/Dashboard";
 import AdminInvoice from "./pages/admin/Invoice";
 
@@ -29,6 +32,8 @@ function App() {
         <Route path="/cart" element={<CartPage />} />
         <Route path="/products/:id" element={<ProductDetail />} />
         <Route path="/invoices" element={<InvoiceList />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/about" element={<AboutPage />} />
       </Route>
 
       {user?.role === "admin" && (
@@ -38,6 +43,7 @@ function App() {
           <Route path="products/edit/:id" element={<EditProduct />} />
           <Route path="products/new" element={<CreateProduct />} />
           <Route path="invoices" element={<AdminInvoice />} />
+          <Route path="users" element={<UserManagement />} />
         </Route>
       )}
 

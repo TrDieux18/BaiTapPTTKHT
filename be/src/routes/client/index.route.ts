@@ -1,5 +1,5 @@
 import { getAllProducts, getProductById } from "../../controllers/product.controller";
-import { login, register } from "../../controllers/user.controller";
+import { login, register, getUserById, updateUser } from "../../controllers/user.controller";
 import { getCart, addToCart, updateCartItem, removeFromCart, clearCart } from "../../controllers/cart.controller";
 import { createInvoice, getInvoicesByUser } from "../../controllers/invoice.controller";
 import express from "express";
@@ -18,5 +18,8 @@ router.delete("/cart/clear/:userId", clearCart);
 
 router.post("/invoices", createInvoice);
 router.get("/invoices/user/:userId", getInvoicesByUser);
+
+router.get("/profile/:id", getUserById);
+router.patch("/profile/:id", updateUser);
 
 export default router;
