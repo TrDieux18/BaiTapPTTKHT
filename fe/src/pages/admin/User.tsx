@@ -1,10 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAllUsers, deleteUser, updateUser } from "@/services/UserService";
+import * as InvoiceService from "@/services/InvoiceService";
 import type { User } from "@/types/User";
+import type { Invoice } from "@/types/Invoice";
 import type { ApiResponse } from "@/types/Response";
 import SearchInput from "@/components/SearchInput";
 import Pagination from "@/components/Pagination";
+import InvoiceDetailModal from "@/components/InvoiceDetailModal";
+import { formatPrice } from "@/helpers/formatPrice";
+import { getStatusBadge } from "@/helpers/getStatusBadge";
 import {
   MdEdit,
   MdDelete,
@@ -16,7 +21,6 @@ import {
 } from "react-icons/md";
 
 const UserPage = () => {
-  const navigate = useNavigate();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -30,6 +34,12 @@ const UserPage = () => {
     password: "",
     role: "user" as "user" | "admin",
   });
+  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+  const [selectedUserInvoices, setSelectedUserInvoices] = useState<Invoice[]>(
+    []
+  );
+  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+  const [loadingInvoices, setLoadingInvoices] = useState(false);
   const itemsPerPage = 10;
 
   useEffect(() => {
@@ -159,6 +169,28 @@ const UserPage = () => {
     } catch (error) {
       alert("Tạo người dùng thất bại, vui lòng thử lại!");
     }
+  };
+
+  const handleViewInvoices = async (userId: string) => {
+    try {
+      setLoadingInvoices(true);
+      setShowInvoiceModal(true);
+      const response = await InvoiceService.getInvoicesByUser(userId);
+      if (response.success && response.data) {
+        setSelectedUserInvoices(response.data);
+      }
+    } catch (error) {
+      alert("Không thể tải hóa đơn!");
+      setShowInvoiceModal(false);
+    } finally {
+      setLoadingInvoices(false);
+    }
+  };
+
+  const handleCloseInvoiceModal = () => {
+    setShowInvoiceModal(false);
+    setSelectedUserInvoices([]);
+    setSelectedInvoice(null);
   };
 
   const formatDate = (dateString?: string) => {
@@ -341,9 +373,7 @@ const UserPage = () => {
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-center">
                       <button
-                        onClick={() =>
-                          navigate(`/admin/invoices?userId=${user._id}`)
-                        }
+                        onClick={() => handleViewInvoices(user._id)}
                         className="flex items-center gap-2 px-3 py-1.5 text-sm text-blue-400 hover:text-blue-300 hover:bg-blue-900/20 rounded-lg transition-colors"
                         title="Xem hóa đơn"
                       >
@@ -497,6 +527,128 @@ const UserPage = () => {
           </div>
         </div>
       )}
+
+      {showInvoiceModal && (
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          onClick={handleCloseInvoiceModal}
+        >
+          <div
+            className="bg-slate-900 border border-slate-800 rounded-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="sticky top-0 bg-slate-900 border-b border-slate-800 p-6 flex justify-between items-center">
+              <h3 className="text-2xl font-bold text-slate-100">
+                Danh sách hóa đơn ({selectedUserInvoices.length})
+              </h3>
+              <button
+                onClick={handleCloseInvoiceModal}
+                className="p-2 hover:bg-slate-800 rounded-lg transition-colors text-slate-400 hover:text-slate-100"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-6">
+              {loadingInvoices ? (
+                <div className="text-center py-12 text-slate-400">
+                  Đang tải hóa đơn...
+                </div>
+              ) : selectedUserInvoices.length === 0 ? (
+                <div className="text-center py-12 text-slate-400">
+                  Người dùng chưa có hóa đơn nào
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-slate-800 border-b border-slate-700">
+                      <tr>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-300 uppercase">
+                          Mã đơn hàng
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-300 uppercase">
+                          Ngày đặt
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-300 uppercase">
+                          Sản phẩm
+                        </th>
+                        <th className="px-4 py-3 text-right text-xs font-semibold text-slate-300 uppercase">
+                          Tổng tiền
+                        </th>
+                        <th className="px-4 py-3 text-center text-xs font-semibold text-slate-300 uppercase">
+                          Trạng thái
+                        </th>
+                        <th className="px-4 py-3 text-center text-xs font-semibold text-slate-300 uppercase">
+                          Chi tiết
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-800">
+                      {selectedUserInvoices.map((invoice) => (
+                        <tr
+                          key={invoice._id}
+                          className="hover:bg-slate-800/50 transition-colors"
+                        >
+                          <td className="px-4 py-3">
+                            <span className="text-slate-100 font-medium">
+                              #{invoice._id.slice(-8).toUpperCase()}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3">
+                            <span className="text-slate-400 text-sm">
+                              {new Date(
+                                invoice.createdAt || ""
+                              ).toLocaleDateString("vi-VN", {
+                                year: "numeric",
+                                month: "2-digit",
+                                day: "2-digit",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3">
+                            <span className="text-slate-300">
+                              {invoice.products.length} sản phẩm
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-right">
+                            <span className="text-slate-100 font-semibold">
+                              {formatPrice(invoice.totalAmount)}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="flex justify-center">
+                              {getStatusBadge(invoice.status)}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="flex justify-center">
+                              <button
+                                onClick={() => setSelectedInvoice(invoice)}
+                                className="px-3 py-1.5 text-sm text-blue-400 hover:text-blue-300 hover:bg-blue-900/20 rounded-lg transition-colors"
+                              >
+                                Xem
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <InvoiceDetailModal
+        invoice={selectedInvoice}
+        isOpen={!!selectedInvoice}
+        onClose={() => setSelectedInvoice(null)}
+        showUserInfo={false}
+      />
     </div>
   );
 };
