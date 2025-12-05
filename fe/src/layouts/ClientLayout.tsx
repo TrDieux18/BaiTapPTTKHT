@@ -112,7 +112,7 @@ const ClientLayout: React.FC = () => {
                 >
                   {({ isActive }) => (
                     <>
-                      Đơn hàng
+                      Hóa đơn
                       {isActive && (
                         <span className="absolute bottom-0 left-0 w-full h-0.5 bg-slate-100" />
                       )}

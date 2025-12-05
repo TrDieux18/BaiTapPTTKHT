@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getAllUsers, deleteUser, updateUser } from "@/services/UserService";
 import type { User } from "@/types/User";
 import type { ApiResponse } from "@/types/Response";
@@ -10,9 +11,12 @@ import {
   MdPerson,
   MdCheckCircle,
   MdCancel,
+  MdReceipt,
+  MdAdd,
 } from "react-icons/md";
 
 const UserPage = () => {
+  const navigate = useNavigate();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -20,6 +24,12 @@ const UserPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [newUser, setNewUser] = useState({
+    username: "",
+    password: "",
+    role: "user" as "user" | "admin",
+  });
   const itemsPerPage = 10;
 
   useEffect(() => {
@@ -108,6 +118,49 @@ const UserPage = () => {
     }
   };
 
+  const handleCreateUser = async () => {
+    if (!newUser.username || !newUser.password) {
+      alert("Vui lòng nhập đầy đủ thông tin!");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:3000/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: newUser.username,
+          password: newUser.password,
+          role: newUser.role,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert("Tạo người dùng thành công!");
+        setShowCreateModal(false);
+        setNewUser({ username: "", password: "", role: "user" });
+        setCurrentPage(1);
+        const params: Record<string, string> = {
+          page: "1",
+          limit: itemsPerPage.toString(),
+        };
+        const usersResponse = await getAllUsers(params);
+        if (usersResponse.success && usersResponse.data) {
+          setUsers(usersResponse.data);
+          if (usersResponse.totalPages) {
+            setTotalPages(usersResponse.totalPages);
+          }
+        }
+      } else {
+        alert(data.message || "Tạo người dùng thất bại!");
+      }
+    } catch (error) {
+      alert("Tạo người dùng thất bại, vui lòng thử lại!");
+    }
+  };
+
   const formatDate = (dateString?: string) => {
     if (!dateString) return "N/A";
     return new Date(dateString).toLocaleDateString("vi-VN", {
@@ -138,6 +191,13 @@ const UserPage = () => {
             Tổng số: {users.length} người dùng
           </p>
         </div>
+        <button
+          onClick={() => setShowCreateModal(true)}
+          className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-900 font-semibold px-4 py-2 rounded-lg transition-colors"
+        >
+          <MdAdd size={20} />
+          Tạo người dùng
+        </button>
       </div>
 
       <div className="flex flex-col md:flex-row gap-4">
@@ -167,6 +227,9 @@ const UserPage = () => {
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider">
                   Ngày tạo
+                </th>
+                <th className="px-6 py-4 text-center text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                  Hóa đơn
                 </th>
                 <th className="px-6 py-4 text-right text-xs font-semibold text-slate-300 uppercase tracking-wider">
                   Hành động
@@ -276,6 +339,21 @@ const UserPage = () => {
                   </td>
 
                   <td className="px-6 py-4">
+                    <div className="flex items-center justify-center">
+                      <button
+                        onClick={() =>
+                          navigate(`/admin/invoices?userId=${user._id}`)
+                        }
+                        className="flex items-center gap-2 px-3 py-1.5 text-sm text-blue-400 hover:text-blue-300 hover:bg-blue-900/20 rounded-lg transition-colors"
+                        title="Xem hóa đơn"
+                      >
+                        <MdReceipt size={18} />
+                        Xem
+                      </button>
+                    </div>
+                  </td>
+
+                  <td className="px-6 py-4">
                     <div className="flex items-center justify-end gap-2">
                       {editingUser?._id === user._id ? (
                         <>
@@ -334,6 +412,91 @@ const UserPage = () => {
         totalPages={totalPages}
         onPageChange={setCurrentPage}
       />
+
+      {showCreateModal && (
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          onClick={() => setShowCreateModal(false)}
+        >
+          <div
+            className="bg-slate-900 border border-slate-800 rounded-xl p-6 max-w-md w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-xl font-bold text-slate-100 mb-4">
+              Tạo người dùng mới
+            </h3>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-slate-400 text-sm mb-2">
+                  Tên đăng nhập
+                </label>
+                <input
+                  type="text"
+                  value={newUser.username}
+                  onChange={(e) =>
+                    setNewUser({ ...newUser, username: e.target.value })
+                  }
+                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-slate-100 focus:outline-none focus:border-slate-500"
+                  placeholder="Nhập tên đăng nhập"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-400 text-sm mb-2">
+                  Mật khẩu
+                </label>
+                <input
+                  type="password"
+                  value={newUser.password}
+                  onChange={(e) =>
+                    setNewUser({ ...newUser, password: e.target.value })
+                  }
+                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-slate-100 focus:outline-none focus:border-slate-500"
+                  placeholder="Nhập mật khẩu"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-400 text-sm mb-2">
+                  Vai trò
+                </label>
+                <select
+                  value={newUser.role}
+                  onChange={(e) =>
+                    setNewUser({
+                      ...newUser,
+                      role: e.target.value as "user" | "admin",
+                    })
+                  }
+                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-slate-100 focus:outline-none focus:border-slate-500"
+                >
+                  <option value="user">Người dùng</option>
+                  <option value="admin">Quản trị viên</option>
+                </select>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  onClick={handleCreateUser}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors"
+                >
+                  Tạo
+                </button>
+                <button
+                  onClick={() => {
+                    setShowCreateModal(false);
+                    setNewUser({ username: "", password: "", role: "user" });
+                  }}
+                  className="flex-1 bg-slate-700 hover:bg-slate-600 text-white py-2 px-4 rounded-lg transition-colors"
+                >
+                  Hủy
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
