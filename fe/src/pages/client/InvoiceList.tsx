@@ -5,6 +5,7 @@ import type { RootState } from "@/store/store";
 import type { Invoice } from "@/types/Invoice";
 import * as InvoiceService from "@/services/InvoiceService";
 import { formatPrice } from "@/helpers/formatPrice";
+import { getStatusBadge } from "@/helpers/getStatusBadge";
 import {
   MdArrowBack,
   MdReceipt,
@@ -126,6 +127,7 @@ const InvoiceList = () => {
                   <p className="text-2xl font-bold text-slate-100">
                     {formatPrice(invoice.totalAmount)}
                   </p>
+                  <div className="mt-2">{getStatusBadge(invoice.status)}</div>
                 </div>
               </div>
 
