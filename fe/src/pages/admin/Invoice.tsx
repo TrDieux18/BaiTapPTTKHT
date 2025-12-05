@@ -13,6 +13,7 @@ import {
 } from "react-icons/md";
 import SearchInput from "@/components/SearchInput";
 import InvoiceDetailModal from "@/components/InvoiceDetailModal";
+import Pagination from "@/components/Pagination";
 
 const AdminInvoice = () => {
   const [searchParams] = useSearchParams();
@@ -24,6 +25,8 @@ const AdminInvoice = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const openModal = (invoice: Invoice) => {
     setSelectedInvoice(invoice);
@@ -113,6 +116,11 @@ const AdminInvoice = () => {
     }
   };
 
+  const totalPages = Math.ceil(filteredInvoices.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedInvoices = filteredInvoices.slice(startIndex, endIndex);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -186,7 +194,7 @@ const AdminInvoice = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800">
-                {filteredInvoices.map((invoice) => (
+                {paginatedInvoices.map((invoice) => (
                   <tr
                     key={invoice._id}
                     className="hover:bg-slate-800/50 transition-colors"
@@ -270,6 +278,12 @@ const AdminInvoice = () => {
           </div>
         </div>
       )}
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
 
       <InvoiceDetailModal
         invoice={selectedInvoice}

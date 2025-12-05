@@ -40,6 +40,8 @@ const UserPage = () => {
   );
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [loadingInvoices, setLoadingInvoices] = useState(false);
+  const [invoiceCurrentPage, setInvoiceCurrentPage] = useState(1);
+  const invoiceItemsPerPage = 5;
   const itemsPerPage = 10;
 
   useEffect(() => {
@@ -191,6 +193,7 @@ const UserPage = () => {
     setShowInvoiceModal(false);
     setSelectedUserInvoices([]);
     setSelectedInvoice(null);
+    setInvoiceCurrentPage(1);
   };
 
   const formatDate = (dateString?: string) => {
@@ -559,84 +562,98 @@ const UserPage = () => {
                   Người dùng chưa có hóa đơn nào
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-slate-800 border-b border-slate-700">
-                      <tr>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-300 uppercase">
-                          Mã đơn hàng
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-300 uppercase">
-                          Ngày đặt
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-300 uppercase">
-                          Sản phẩm
-                        </th>
-                        <th className="px-4 py-3 text-right text-xs font-semibold text-slate-300 uppercase">
-                          Tổng tiền
-                        </th>
-                        <th className="px-4 py-3 text-center text-xs font-semibold text-slate-300 uppercase">
-                          Trạng thái
-                        </th>
-                        <th className="px-4 py-3 text-center text-xs font-semibold text-slate-300 uppercase">
-                          Chi tiết
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-800">
-                      {selectedUserInvoices.map((invoice) => (
-                        <tr
-                          key={invoice._id}
-                          className="hover:bg-slate-800/50 transition-colors"
-                        >
-                          <td className="px-4 py-3">
-                            <span className="text-slate-100 font-medium">
-                              #{invoice._id.slice(-8).toUpperCase()}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3">
-                            <span className="text-slate-400 text-sm">
-                              {new Date(
-                                invoice.createdAt || ""
-                              ).toLocaleDateString("vi-VN", {
-                                year: "numeric",
-                                month: "2-digit",
-                                day: "2-digit",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3">
-                            <span className="text-slate-300">
-                              {invoice.products.length} sản phẩm
-                            </span>
-                          </td>
-                          <td className="px-4 py-3 text-right">
-                            <span className="text-slate-100 font-semibold">
-                              {formatPrice(invoice.totalAmount)}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3">
-                            <div className="flex justify-center">
-                              {getStatusBadge(invoice.status)}
-                            </div>
-                          </td>
-                          <td className="px-4 py-3">
-                            <div className="flex justify-center">
-                              <button
-                                onClick={() => setSelectedInvoice(invoice)}
-                                className="px-3 py-1.5 text-sm text-blue-400 hover:text-blue-300 hover:bg-blue-900/20 rounded-lg transition-colors"
-                              >
-                                Xem
-                              </button>
-                            </div>
-                          </td>
+                <>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-slate-800 border-b border-slate-700">
+                        <tr>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-slate-300 uppercase">
+                            Mã đơn hàng
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-slate-300 uppercase">
+                            Ngày đặt
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-slate-300 uppercase">
+                            Sản phẩm
+                          </th>
+                          <th className="px-4 py-3 text-right text-xs font-semibold text-slate-300 uppercase">
+                            Tổng tiền
+                          </th>
+                          <th className="px-4 py-3 text-center text-xs font-semibold text-slate-300 uppercase">
+                            Trạng thái
+                          </th>
+                          <th className="px-4 py-3 text-center text-xs font-semibold text-slate-300 uppercase">
+                            Chi tiết
+                          </th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+                      <tbody className="divide-y divide-slate-800">
+                        {selectedUserInvoices
+                          .slice(
+                            (invoiceCurrentPage - 1) * invoiceItemsPerPage,
+                            invoiceCurrentPage * invoiceItemsPerPage
+                          )
+                          .map((invoice) => (
+                            <tr
+                              key={invoice._id}
+                              className="hover:bg-slate-800/50 transition-colors"
+                            >
+                              <td className="px-4 py-3">
+                                <span className="text-slate-100 font-medium">
+                                  #{invoice._id.slice(-8).toUpperCase()}
+                                </span>
+                              </td>
+                              <td className="px-4 py-3">
+                                <span className="text-slate-400 text-sm">
+                                  {new Date(
+                                    invoice.createdAt || ""
+                                  ).toLocaleDateString("vi-VN", {
+                                    year: "numeric",
+                                    month: "2-digit",
+                                    day: "2-digit",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })}
+                                </span>
+                              </td>
+                              <td className="px-4 py-3">
+                                <span className="text-slate-300">
+                                  {invoice.products.length} sản phẩm
+                                </span>
+                              </td>
+                              <td className="px-4 py-3 text-right">
+                                <span className="text-slate-100 font-semibold">
+                                  {formatPrice(invoice.totalAmount)}
+                                </span>
+                              </td>
+                              <td className="px-4 py-3">
+                                <div className="flex justify-center">
+                                  {getStatusBadge(invoice.status)}
+                                </div>
+                              </td>
+                              <td className="px-4 py-3">
+                                <div className="flex justify-center">
+                                  <button
+                                    onClick={() => setSelectedInvoice(invoice)}
+                                    className="px-3 py-1.5 text-sm text-blue-400 hover:text-blue-300 hover:bg-blue-900/20 rounded-lg transition-colors"
+                                  >
+                                    Xem
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <Pagination
+                    currentPage={invoiceCurrentPage}
+                    totalPages={Math.ceil(
+                      selectedUserInvoices.length / invoiceItemsPerPage
+                    )}
+                    onPageChange={setInvoiceCurrentPage}
+                  />
+                </>
               )}
             </div>
           </div>
