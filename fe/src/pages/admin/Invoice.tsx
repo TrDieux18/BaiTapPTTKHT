@@ -3,14 +3,32 @@ import { useEffect, useState } from "react";
 import type { Invoice } from "@/types/Invoice";
 import * as InvoiceService from "@/services/InvoiceService";
 import { formatPrice } from "@/helpers/formatPrice";
-import { MdReceipt, MdShoppingBag, MdPerson } from "react-icons/md";
+import {
+  MdReceipt,
+  MdShoppingBag,
+  MdPerson,
+  MdVisibility,
+} from "react-icons/md";
 import SearchInput from "@/components/SearchInput";
+import InvoiceDetailModal from "@/components/InvoiceDetailModal";
 
 const AdminInvoice = () => {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [filteredInvoices, setFilteredInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+  const [showModal, setShowModal] = useState(false);
+
+  const openModal = (invoice: Invoice) => {
+    setSelectedInvoice(invoice);
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setTimeout(() => setSelectedInvoice(null), 300);
+  };
 
   useEffect(() => {
     const fetchInvoices = async () => {
@@ -167,7 +185,7 @@ const AdminInvoice = () => {
                     <span className="text-slate-400 text-sm">
                       {typeof invoice.userId === "string"
                         ? `User ID: ${invoice.userId}`
-                        : `User: ${(invoice.userId as any).username}`}
+                        : `Khách hàng: ${(invoice.userId as any).username}`}
                     </span>
                   </div>
                   <p className="text-slate-400 text-sm">
@@ -184,9 +202,18 @@ const AdminInvoice = () => {
               </div>
 
               <div className="border-t border-slate-800 pt-4 mb-4">
-                <h4 className="text-slate-100 font-semibold mb-3">
-                  Sản phẩm ({invoice.products.length})
-                </h4>
+                <div className="flex justify-between items-center mb-3">
+                  <h4 className="text-slate-100 font-semibold">
+                    Sản phẩm ({invoice.products.length})
+                  </h4>
+                  <button
+                    onClick={() => openModal(invoice)}
+                    className="flex items-center gap-2 text-blue-400 hover:text-blue-300 text-sm transition-colors"
+                  >
+                    <MdVisibility size={18} />
+                    Xem chi tiết
+                  </button>
+                </div>
                 <div className="space-y-2">
                   {invoice.products.map((item, index) => {
                     const isPopulated = typeof item.productId !== "string";
@@ -247,6 +274,13 @@ const AdminInvoice = () => {
           ))}
         </div>
       )}
+
+      <InvoiceDetailModal
+        invoice={selectedInvoice}
+        isOpen={showModal}
+        onClose={closeModal}
+        showUserInfo={true}
+      />
     </div>
   );
 };

@@ -5,40 +5,30 @@ import type { RootState } from "@/store/store";
 import type { Invoice } from "@/types/Invoice";
 import * as InvoiceService from "@/services/InvoiceService";
 import { formatPrice } from "@/helpers/formatPrice";
-import { MdArrowBack, MdReceipt, MdShoppingBag } from "react-icons/md";
+import {
+  MdArrowBack,
+  MdReceipt,
+  MdShoppingBag,
+  MdVisibility,
+} from "react-icons/md";
+import InvoiceDetailModal from "@/components/InvoiceDetailModal";
 
 const InvoiceList = () => {
   const user = useSelector((state: RootState) => state.user.user);
   const navigate = useNavigate();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+  const [showModal, setShowModal] = useState(false);
 
-  const getStatusBadge = (status: string) => {
-    const statusConfig = {
-      pending: {
-        label: "Chờ xử lý",
-        className: "bg-yellow-900/20 text-yellow-400 border-yellow-800",
-      },
-      paid: {
-        label: "Đã thanh toán",
-        className: "bg-green-900/20 text-green-400 border-green-800",
-      },
-      cancelled: {
-        label: "Đã hủy",
-        className: "bg-red-900/20 text-red-400 border-red-800",
-      },
-    };
+  const openModal = (invoice: Invoice) => {
+    setSelectedInvoice(invoice);
+    setShowModal(true);
+  };
 
-    const config =
-      statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
-
-    return (
-      <span
-        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${config.className}`}
-      >
-        {config.label}
-      </span>
-    );
+  const closeModal = () => {
+    setShowModal(false);
+    setTimeout(() => setSelectedInvoice(null), 300);
   };
 
   useEffect(() => {
@@ -136,16 +126,24 @@ const InvoiceList = () => {
                   <p className="text-2xl font-bold text-slate-100">
                     {formatPrice(invoice.totalAmount)}
                   </p>
-                  <div className="mt-2">{getStatusBadge(invoice.status)}</div>
                 </div>
               </div>
 
               <div className="border-t border-slate-800 pt-4">
-                <h4 className="text-slate-100 font-semibold mb-3">
-                  Sản phẩm ({invoice.products.length})
-                </h4>
+                <div className="flex justify-between items-center mb-3">
+                  <h4 className="text-slate-100 font-semibold">
+                    Sản phẩm ({invoice.products.length})
+                  </h4>
+                  <button
+                    onClick={() => openModal(invoice)}
+                    className="flex items-center gap-2 text-blue-400 hover:text-blue-300 text-sm transition-colors"
+                  >
+                    <MdVisibility size={18} />
+                    Xem chi tiết
+                  </button>
+                </div>
                 <div className="space-y-2">
-                  {invoice.products.map((item, index) => {
+                  {invoice.products.slice(0, 2).map((item, index) => {
                     const isPopulated = typeof item.productId !== "string";
 
                     const productTitle = isPopulated
@@ -179,12 +177,25 @@ const InvoiceList = () => {
                       </div>
                     );
                   })}
+                  {invoice.products.length > 2 && (
+                    <div className="text-center pt-2">
+                      <span className="text-slate-400 text-sm">
+                        +{invoice.products.length - 2} sản phẩm khác
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           ))}
         </div>
       )}
+
+      <InvoiceDetailModal
+        invoice={selectedInvoice}
+        isOpen={showModal}
+        onClose={closeModal}
+      />
     </div>
   );
 };
