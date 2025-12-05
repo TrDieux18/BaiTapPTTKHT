@@ -211,7 +211,9 @@ const ClientLayout: React.FC = () => {
               <ul className="space-y-2 text-sm">
                 <li>
                   <a
-                    href="#"
+                    href="https://www.facebook.com/tran.dieu.ne"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="hover:text-slate-100 transition-colors"
                   >
                     Về chúng tôi
@@ -219,7 +221,9 @@ const ClientLayout: React.FC = () => {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href="https://www.facebook.com/tran.dieu.ne"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="hover:text-slate-100 transition-colors"
                   >
                     Liên hệ
@@ -227,7 +231,7 @@ const ClientLayout: React.FC = () => {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href="https://www.facebook.com/tran.dieu.ne"
                     className="hover:text-slate-100 transition-colors"
                   >
                     Câu hỏi thường gặp
@@ -235,7 +239,9 @@ const ClientLayout: React.FC = () => {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href="https://www.facebook.com/tran.dieu.ne"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="hover:text-slate-100 transition-colors"
                   >
                     Thông tin vận chuyển
@@ -290,19 +296,25 @@ const ClientLayout: React.FC = () => {
               </h3>
               <div className="flex gap-4">
                 <a
-                  href="#"
+                  href="https://www.facebook.com/tran.dieu.ne"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="bg-slate-900 p-3 text-center rounded-lg hover:bg-slate-800 transition-colors border border-slate-800"
                 >
                   <MdFacebook size={20} />
                 </a>
                 <a
-                  href="#"
+                  href="https://www.instagram.com/_trdieu.ne/"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="bg-slate-900 p-3 rounded-lg hover:bg-slate-800 transition-colors border border-slate-800"
                 >
                   <FaTwitter size={20} />
                 </a>
                 <a
-                  href="#"
+                  href="https://www.instagram.com/_trdieu.ne/"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="bg-slate-900 p-3 rounded-lg hover:bg-slate-800 transition-colors border border-slate-800"
                 >
                   <FaInstagram size={20} />

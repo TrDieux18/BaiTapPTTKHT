@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+
 import { getAllUsers, deleteUser, updateUser } from "@/services/UserService";
 import * as InvoiceService from "@/services/InvoiceService";
 import type { User } from "@/types/User";
